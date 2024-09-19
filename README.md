@@ -1,7 +1,5 @@
 <p align="left"> <img src="https://komarev.com/ghpvc/?username=dov1906&label=Profile%20views&color=0e75b6&style=flat" alt="dov1906" /> </p>
 
-<p align="left"> <a href="https://github.com/ryo-ma/github-profile-trophy"><img src="https://github-profile-trophy.vercel.app/?username=dov1906" alt="dov1906" /></a> </p>
-
 # Hi there, I'm Dov Azogui 👋
 
 ## 🚀 About Me
