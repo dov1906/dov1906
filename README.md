@@ -2,6 +2,18 @@
 
 # Hi there, I'm Dov Azogui 👋
 
+## 🌟 Featured Projects
+- **[Wizarding World Character Manager](https://github.com/dov1906/Wizarding-World-Character-Manager)**: A React-based app enabling users to manage and view characters from the magical world. Features include filtering by house, adding new characters, and managing favorite characters.
+- **[Game Library Project](https://github.com/dov1906/Game-Library-Project)**: A web app that allows users to explore free-to-play games, add them to a personal library, and manage their favorite games. The app fetches data from a local server and provides an interactive experience.
+- **[Weather Dashboard](https://github.com/dov1906/Weather-Dashboard)**: A React-based weather app fetching real-time weather data from the OpenWeather API, displaying current temperature, humidity, and wind speed for any city.
+- **[Task Management Dashboard](https://github.com/dov1906/task-dashboard)**: A React-based task management system featuring user authentication, task sorting, filtering, and marking tasks as completed.
+- **[Full-Stack Web Application](https://github.com/dov1906/task-dashboard)**: Developed a scalable full-stack web application using **React** for the front-end and **Flask** for the back-end. The app features a responsive UI, API integration, and real-time data updates.
+  
+- **[Armless Interface Mouse using Electromyography](https://dovazogui.wixsite.com/dovazoguiportfolio/post/armless-interface-mouse-using-electromyography)**: Developed an EMG-based mouse control system for tetraplegic users, optimized for 3DOF and 5DOF using C++.
+- **[ECG Design Using Arduino](https://dovazogui.wixsite.com/dovazoguiportfolio/post/copy-of-ecg-design-using-arduino)**: Designed an ECG system using Arduino, capturing heart's electrical activity and processing data using C++.
+- **[iCycle Project (BLE Sensor System)](https://dovazogui.wixsite.com/dovazoguiportfolio/post/empowering-tetraplegic-individuals-with-icycle-a-ble-enabled-virtual-cycling-experience)**: Developed a custom BLE sensor system for virtual cycling, improving interaction for tetraplegic users.
+- **[Aortic Aneurysm CFD Analysis](https://dovazogui.wixsite.com/dovazoguiportfolio/post/exploring-aortic-disease-progression-through-computational-fluid-dynamics)**: Performed computational analysis using machine learning on a quantum computer to analyze the impact of aneurysm size on hemodynamics.
+
 ## 🚀 About Me
 I’m a passionate **Biomedical Engineer** and **Software Developer** with a focus on integrating advanced medical technologies with cutting-edge software solutions. My journey through top-tier institutions like **University College London** and **Nanyang Technological University** has provided me with a diverse set of skills ranging from **Medical Physics** to **Full-Stack Web Development**.
 
@@ -41,15 +53,6 @@ I have a solid background in:
 
 - **Campus Ambassador** - *Stand With Us*
   - Organized events on antisemitism and racism, impacting over 50 students per event.
-
-## 🌟 Featured Projects
-- **[Full-Stack Web Application](https://github.com/dov1906/task-dashboard)**: Developed a scalable full-stack web application using **React** for the front-end and **Flask** for the back-end. The application is designed for dynamic user interactions, integrating **JavaScript** and **CSS** for a seamless UI/UX experience. Key features include a responsive user interface, API integration, and real-time data updates.
-- **[Armless Interface Mouse using Electromyography](https://dovazogui.wixsite.com/dovazoguiportfolio/post/armless-interface-mouse-using-electromyography)**: Developed an EMG-based mouse control system for tetraplegic users, leveraging signals from arm muscles to control a computer mouse. Optimized for both 3 and 5 degrees of freedom (3DOF and 5DOF) using C++ coding language.
-- **[ECG Design Using Arduino](https://dovazogui.wixsite.com/dovazoguiportfolio/post/copy-of-ecg-design-using-arduino)**: Designed a functional ECG using Arduino, capturing electrical activity from the heart with precise signal amplification and C++ coding for data acquisition.
-- **[iCycle Project (BLE Sensor System)](https://dovazogui.wixsite.com/dovazoguiportfolio/post/empowering-tetraplegic-individuals-with-icycle-a-ble-enabled-virtual-cycling-experience)**: Developed a custom BLE sensor system for virtual cycling for tetraplegic users.
-- **[Aortic Aneurysm CFD Analysis](https://dovazogui.wixsite.com/dovazoguiportfolio/post/exploring-aortic-disease-progression-through-computational-fluid-dynamics)**: Computational analysis of aneurysm size impact using machine learning on a quantum computer.
-
-
 
 ## 🌱 I’m currently learning
 - Advanced Machine Learning Algorithms
