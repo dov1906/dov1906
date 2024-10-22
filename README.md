@@ -9,7 +9,6 @@
 - **[Weather Dashboard](https://github.com/dov1906/Weather-Dashboard)**: A React-based weather app fetching real-time weather data from the OpenWeather API, displaying current temperature, humidity, and wind speed for any city.
 - **[Task Management Dashboard](https://github.com/dov1906/task-dashboard)**: A React-based task management system featuring user authentication, task sorting, filtering, and marking tasks as completed.
 - **[Full-Stack Web Application](https://github.com/dov1906/task-dashboard)**: Developed a scalable full-stack web application using **React** for the front-end and **Flask** for the back-end. The app features a responsive UI, API integration, and real-time data updates.
-  
 - **[Armless Interface Mouse using Electromyography](https://dovazogui.wixsite.com/dovazoguiportfolio/post/armless-interface-mouse-using-electromyography)**: Developed an EMG-based mouse control system for tetraplegic users, optimized for 3DOF and 5DOF using C++.
 - **[ECG Design Using Arduino](https://dovazogui.wixsite.com/dovazoguiportfolio/post/copy-of-ecg-design-using-arduino)**: Designed an ECG system using Arduino, capturing heart's electrical activity and processing data using C++.
 - **[iCycle Project (BLE Sensor System)](https://dovazogui.wixsite.com/dovazoguiportfolio/post/empowering-tetraplegic-individuals-with-icycle-a-ble-enabled-virtual-cycling-experience)**: Developed a custom BLE sensor system for virtual cycling, improving interaction for tetraplegic users.
@@ -24,46 +23,73 @@ I have a solid background in:
 - **Leadership**: I’ve led teams in various capacities, from research to large-scale events, fostering teamwork and innovation.
 
 ## 🧠 My Tech Stack
-- **Languages**: JavaScript, Python, SQL, C++, MATLAB
-- **Frameworks & Tools**: React, Node.js, Flask, Arduino (C++), Ruby on Rails
-- **Database**: MySQL, PostgreSQL, SQLite
-- **Technologies**: BLE (Bluetooth Low Energy), Machine Learning, Computational Fluid Dynamics (CFD)
+- **Languages**: JavaScript, Python, SQL, NoSQL, C#, Arduino (C++), HTML/CSS, MATLAB, Java, Bash
+- **Frameworks**: ROS, Bootstrap, React, Node.js, Express, SQLAlchemy, SQLite, MySQL, MongoDB, RESTful API, Junit, Semantic UI
+- **Libraries**: Keras, PyTorch, NumPy, Matplotlib, OpenCV, Pandas, PyTorch
+- **Developer Tools**: Git, Unix Shell, AWS, GCC, FPGA, VS Code
+
 
 ## 📚 My Education
-- **MEng in Biomedical Engineering** (2025-2026) - *University College London*
-  - Focus on Medical Physics, Biomedical Software, and Advanced Medical Technologies.
-  
-- **Software Engineering Bootcamp** (2024) - *Flatiron School, New York*
-  - Mastered full-stack development, building scalable web applications.
+### University College London (UCL)
+**Integrated Master of Engineering in Biomedical Engineering with Year Abroad and Gap-Year**  
+*London, UK*  
+*Sept 2021 - May 2026*
+- Selected for the Master in Biomedical Engineering to deepen expertise in Software Engineering, focusing on biomedical applications and coding integration for advanced medical technologies.
+- Specialized in Programming (OOP), Mathematical Modeling, and Statistical Analysis for advanced medical technologies.
+- Carried out several coding projects in JavaScript, MATLAB, C++, and Python, displayed in my [Portfolio](#).
 
-- **BEng in Medical Physics** (2021-2024) - *University College London*
-  - Completed several projects in HTML, JavaScript, MATLAB, Python, and C++.
+### Flatiron School
+**Software Engineering Bootcamp (with Advanced Mathematics applied to Computing)**  
+*New York, USA*  
+*Aug 2024 - Dec 2024*
+- Completed a 15-week intensive full-stack development program, mastering technologies like JavaScript, React, Ruby on Rails, Python, and SQL to build scalable web applications.
 
-- **Exchange Program** (2023-2024) - *Nanyang Technological University, Singapore*
-  - Focused on Programming, Engineering Graphics, Control Systems in Biosystems, and Innovation.
+### Nanyang Technological University (NTU)
+**Exchange Student**  
+*Singapore*  
+*Aug 2023 - May 2024*
+- Followed intensive modules such as Finance, Programming, Advanced Mathematics, and Engineering Graphics.
+
 
 ## 💼 My Experience
-- **Hardware Engineer Research Assistant** - *University College London*
-  - Developed a BLE sensor system for virtual cycling simulations, enhancing interaction for tetraplegic users.
-  
-- **Biomedical Engineer Research Assistant** - *Nanyang Technological University*
-  - Conducted simulations using CFD and machine learning for hemodynamic analysis of aortic aneurysms.
 
-- **Quantitative Analyst Intern** - *Makor Group, London*
-  - Developed a VBA-based profit/loss modeler for financial transactions, improving risk assessment by 25%.
+### University College London (UCL)  
+**Summer Intern, Embedded Systems Software Developer** - Supervised by Dr. Dimitrios Airantzis  
+*London, UK*  
+*May 2024 - Aug 2024*  
+- Designed and implemented a Bluetooth Low Energy (BLE) sensor system using C++ and Python, ensuring real-time, low-latency communication between hardware sensors and external platforms.
+- Focused on Embedded Systems Development and IoT, ensuring seamless wireless communication between hardware sensors and external virtual reality software.
+- Improved user interaction by 30% and enhanced performance metrics within the virtual platform.
 
-- **Campus Ambassador** - *Stand With Us*
-  - Organized events on antisemitism and racism, impacting over 50 students per event.
+### Nanyang Technological University (NTU)  
+**Biomedical Engineer Research Assistant** - Supervised by Dr. Chi-Wei Ong  
+*Singapore*  
+*Jan 2024 - May 2024*  
+- Conducted an in-depth analysis of Hemodynamic Parameters in Aortic Aneurysms using computational fluid dynamics (CFD).
+- Used a Machine Learning algorithm provided by Nvidia in Python, running on a Quantum Computer from the National Supercomputing Centre (NSCC) Singapore, to generate and optimize 10+ geometric shapes of aortic aneurysms for simulation.
+
+### Makor Group | Financial Services Firm  
+**Summer Intern, Software Engineer**  
+*London, UK*  
+*Jun 2022 - Jul 2022*  
+- Collaborated with the team to develop a data processing tool to help automate financial option transaction analysis, reducing the need for manual data entry using Python and SQL.
+- Worked on API integration to improve data flow between systems, enhancing accessibility of transaction data for the quantitative team.
+
 
 ## 🌱 I’m currently learning
 - Advanced Machine Learning Algorithms
 - Quantum Computing Applications in Medicine
+- Full-Stack Web Development with a focus on scalable applications
 
 ## 📫 How to reach me
 - **Email**: [dov.azogui@gmail.com](mailto:dov.azogui@gmail.com)
 - **LinkedIn**: [linkedin.com/in/dov-azogui](https://www.linkedin.com/in/dov-azogui)
 - **GitHub**: [github.com/dov1906](https://github.com/dov1906)
+- **Portfolio**: [dovazogui.wixsite.com/dovazoguiportfolio](https://dovazogui.wixsite.com/dovazoguiportfolio)
 
 ## ⚡ Fun Facts
-- I’m a long-time scout leader, managing a £60,000 budget for a 3-week camp with 85 children!
-- I’m passionate about combining technology and healthcare to make a difference in people’s lives.
+- I’m a long-time scout leader, where I managed a £60,000 budget for a 3-week camp with 85 children!
+- I’m passionate about combining technology and healthcare to create impactful solutions that make a real difference in people’s lives.
+- I love working on projects that bridge the gap between cutting-edge tech and real-world medical applications.
+
+
