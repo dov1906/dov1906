@@ -1,6 +1,6 @@
 <p align="left"> <img src="https://komarev.com/ghpvc/?username=dov1906&label=Profile%20views&color=0e75b6&style=flat" alt="dov1906" /> </p>
 
-# Hi there, I'm Dov Azogui 👋
+# [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=24&duration=2500&pause=2000&color=A12098&center=true&width=438&lines=Hi+there%2C+I'm+Dov+Azogui+%F0%9F%91%8B)](https://git.io/typing-svg)
 
 ## 🌟 Featured Projects
 - **[Trading Platform - OOP-CLI Project](https://github.com/dov1906/Trading-Platform-OOP-CLI-Project)**: A Python-based trading platform CLI that allows users to manage traders, portfolios, and transactions efficiently. Features include logging stock trades, viewing portfolios, and managing trader accounts.
