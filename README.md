@@ -2,7 +2,7 @@
 
 # [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=21&duration=2500&pause=2000&color=151A64&width=435&lines=Hi+there%2C+I'm+Dov+Azogui+%F0%9F%91%8B;Full+Stack+Developper)](https://git.io/typing-svg)
 
-# ![](http://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=dov1906&theme=default)
+#                              ![](http://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=dov1906&theme=default)
 
 ## 🌟 Featured Projects
 
