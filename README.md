@@ -1,6 +1,9 @@
 <p align="left"> <img src="https://komarev.com/ghpvc/?username=dov1906&label=Profile%20views&color=0e75b6&style=flat" alt="dov1906" /> </p>
 
 # [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=21&duration=2500&pause=2000&color=151A64&width=435&lines=Hi+there%2C+I'm+Dov+Azogui+%F0%9F%91%8B;Full+Stack+Developper)](https://git.io/typing-svg)
+
+# ![](http://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=dov1906&theme=default)
+
 ## 🌟 Featured Projects
 
 - **[Finance Management App](https://github.com/dov1906/full-stack)**: A comprehensive **Full-Stack** web application for managing financial data, built with **React**, **Flask**, **SQLAlchemy** in  **JavaScript**, **Python**, **SQL** and **CSS**. The app provides a sleek, user-friendly interface for adding, viewing, and managing traders, portfolios, and transactions within a finance-focused environment.
