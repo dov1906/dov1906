@@ -2,6 +2,9 @@
 
 # [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=21&duration=2500&pause=2000&color=151A64&width=435&lines=Hi+there%2C+I'm+Dov+Azogui+%F0%9F%91%8B;Full+Stack+Developper)](https://git.io/typing-svg)
 ## 🌟 Featured Projects
+
+- **[Finance Management App](https://github.com/dov1906/full-stack)**: A comprehensive **Full-Stack** web application for managing financial data, built with **React**, **Flask**, **SQLAlchemy** in  **JavaScript**, **Python**, **SQL** and **CSS**. The app provides a sleek, user-friendly interface for adding, viewing, and managing traders, portfolios, and transactions within a finance-focused environment.
+  
 - **[Trading Platform - OOP-CLI Project](https://github.com/dov1906/Trading-Platform-OOP-CLI-Project)**: A Python-based trading platform CLI that allows users to manage traders, portfolios, and transactions efficiently. Features include logging stock trades, viewing portfolios, and managing trader accounts.
 - **[Wizarding World Character Manager](https://github.com/dov1906/Wizarding-World-Character-Manager)**: A React-based app enabling users to manage and view characters from the magical world. Features include filtering by house, adding new characters, and managing favorite characters.
 - **[Game Library Project](https://github.com/dov1906/Game-Library-Project)**: A web app that allows users to explore free-to-play games, add them to a personal library, and manage their favorite games. The app fetches data from a local server and provides an interactive experience.
