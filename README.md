@@ -6,6 +6,8 @@
 
 ## 🌟 Featured Projects
 
+- **[AI-Assisted Travel Planner](https://github.com/dov1906/AI-Assisted-Travel-Planner)**: A full-stack application for managing trips, activities, and expenses. Features include OpenAI-powered personalized itineraries, real-time flight data via the MakCorps API, and an intuitive user interface built with **React**, **Flask**, and **SQLAlchemy**.
+
 - **[Finance Management App](https://github.com/dov1906/full-stack)**: A comprehensive **Full-Stack** web application for managing financial data, built with **React**, **Flask**, **SQLAlchemy** in  **JavaScript**, **Python**, **SQL** and **CSS**. The app provides a sleek, user-friendly interface for adding, viewing, and managing traders, portfolios, and transactions within a finance-focused environment.
   
 - **[Trading Platform - OOP-CLI Project](https://github.com/dov1906/Trading-Platform-OOP-CLI-Project)**: A Python-based trading platform CLI that allows users to manage traders, portfolios, and transactions efficiently. Features include logging stock trades, viewing portfolios, and managing trader accounts.
