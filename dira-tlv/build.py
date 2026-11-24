@@ -40,7 +40,7 @@ manifest = {
     "short_name": "Dira TLV",
     "description": "Recherche d'appartement à Tel Aviv : annonces, score, messages WhatsApp.",
     "lang": "fr",
-    "start_url": "./#annonces",
+    "start_url": "index.html#annonces",
     "scope": "./",
     "display": "standalone",
     "background_color": "#F4F7FA",
@@ -55,7 +55,7 @@ manifest = {
 
 sw = f"""// Dira TLV service worker — version {version}
 const CACHE = "dira-{version}";
-const SHELL = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png"];
+const SHELL = ["index.html", "manifest.json", "icon-192.png", "icon-512.png"];
 self.addEventListener("install", e => {{ e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); }});
 self.addEventListener("activate", e => {{ e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); }});
 self.addEventListener("fetch", e => {{
