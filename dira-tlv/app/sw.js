@@ -1,5 +1,5 @@
-// Dira TLV service worker — version c9468298c9
-const CACHE = "dira-c9468298c9";
+// Dira TLV service worker — version 1da9334449
+const CACHE = "dira-1da9334449";
 const SHELL = ["index.html", "manifest.json", "icon-192.png", "icon-512.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });

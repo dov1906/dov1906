@@ -2,7 +2,7 @@
 
 Tâche autonome. Tu scannes le marché locatif de Tel Aviv pour Dov et sa cousine, olim de France, et tu ajoutes les nouvelles annonces pertinentes, avec leurs photos, dans leur tracker. Ne contacte personne et n'envoie aucun message.
 
-Outils à charger avec ToolSearch : "select:mcp__Exa__web_search_exa,mcp__Exa__web_fetch_exa,WebFetch,WebSearch,ArtifactData,Artifact". Si Exa n'est pas disponible, utilise WebSearch et WebFetch. Ne lis jamais les sites d'annonces avec curl ou wget. curl sert seulement à télécharger les photos (étape 4). La date du jour est celle de la commande `date`.
+Outils à charger avec ToolSearch : "select:mcp__Exa__web_search_exa,mcp__Exa__web_fetch_exa,WebFetch,WebSearch,ArtifactData,Artifact". Si Exa n'est pas disponible, utilise WebSearch et WebFetch. Ne lis jamais les sites d'annonces avec curl ou wget. curl sert seulement à télécharger les photos (étape 4). La date et l'heure viennent de la commande `date -u +%Y-%m-%dT%H:%M:%SZ` : utilise CETTE valeur pour `createdAt`, `updatedAt` et `history[].t`, jamais une heure inventée ou arrondie.
 
 Tracker : https://claude.ai/artifact/1EUHH9DjoTxyPys7XjcZY1 (outil `ArtifactData`, collection `apts`).
 

@@ -199,7 +199,7 @@ function waNumber(t){let d=String(t||"").replace(/\D/g,"");if(!d)return"";if(d.s
 function waLink(phone,text){const n=waNumber(phone);return "https://wa.me/"+(n||"")+"?text="+encodeURIComponent(text||"")}
 function toast(m){const t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2600)}
 async function copy(text){try{await navigator.clipboard.writeText(text);toast("Copié")}catch(e){toast("Copie impossible ici : sélectionne le texte")}}
-function relTime(iso){if(!iso)return"";const d=(Date.now()-new Date(iso))/36e5;if(d<1)return"il y a "+Math.max(1,Math.round(d*60))+" min";if(d<48)return"il y a "+Math.round(d)+" h";return"il y a "+Math.round(d/24)+" j"}
+function relTime(iso){if(!iso)return"";const d=(Date.now()-new Date(iso))/36e5;if(isNaN(d))return"";if(d<0.02)return"à l'instant";if(d<1)return"il y a "+Math.max(1,Math.round(d*60))+" min";if(d<48)return"il y a "+Math.round(d)+" h";return"il y a "+Math.round(d/24)+" j"}
 function relDay(d){if(!d)return"";const t=new Date(d);if(isNaN(t))return String(d);const days=Math.floor((Date.now()-t)/864e5);if(days<=0)return"aujourd'hui";if(days===1)return"hier";return"il y a "+days+" j ("+t.toLocaleDateString("fr-FR",{day:"numeric",month:"short"})+")"}
 function fmtDT(iso){if(!iso)return"";const d=new Date(iso);if(isNaN(d))return iso;return d.toLocaleString("fr-FR",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
 
