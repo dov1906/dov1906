@@ -1,0 +1,811 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1F5AA6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Dira TLV">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Dira Tel Aviv</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: sticky header with scrollable tab strip; single column of cards on phone, two columns on desktop. White-city Bauhaus: plaster white, sea blue, sun yellow. */
+:root{
+  --bg:#F4F7FA; --surface:#FFFFFF; --surface-2:#EEF2F7; --ink:#14213A; --muted:#5B6880; --line:#DCE3EC;
+  --accent:#1F5AA6; --accent-ink:#FFFFFF; --accent-soft:#E3ECF8; --sun:#F2B33D; --sun-ink:#3A2A05;
+  --good:#2E8B57; --good-soft:#E2F3EA; --warn:#B8741A; --warn-soft:#FBF0DF; --bad:#B93B35; --bad-soft:#F8E4E2;
+  --wa:#1F9E57;
+  --f-display:"Rubik",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  --f-body:"Rubik",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1420; --surface:#152035; --surface-2:#1B2840; --ink:#E6ECF5; --muted:#9AA8BE; --line:#27354E;
+  --accent:#78A9EE; --accent-ink:#0D1420; --accent-soft:#1C2D4A; --sun:#F2C266; --sun-ink:#2A1E03;
+  --good:#5CC48A; --good-soft:#163326; --warn:#E3A54F; --warn-soft:#352812; --bad:#EE7B74; --bad-soft:#3A1A1A; --wa:#3CC57A;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1420; --surface:#152035; --surface-2:#1B2840; --ink:#E6ECF5; --muted:#9AA8BE; --line:#27354E;
+  --accent:#78A9EE; --accent-ink:#0D1420; --accent-soft:#1C2D4A; --sun:#F2C266; --sun-ink:#2A1E03;
+  --good:#5CC48A; --good-soft:#163326; --warn:#E3A54F; --warn-soft:#352812; --bad:#EE7B74; --bad-soft:#3A1A1A; --wa:#3CC57A;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px;padding-block:12px 6px}
+.logo{width:34px;height:34px;flex:none}
+.brand h1{font-family:var(--f-display);font-size:1.25rem;margin:0;font-weight:700;letter-spacing:-.01em}
+.brand .he{font-weight:500;color:var(--muted);font-size:.95rem;margin-inline-start:6px}
+.sync{margin-inline-start:auto;font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:6px;text-align:end}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
+.dot.ok{background:var(--good)}.dot.warn{background:var(--warn)}
+nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-bottom:8px}
+nav::-webkit-scrollbar{display:none}
+nav a{flex:none;text-decoration:none;color:var(--muted);font-weight:500;padding:7px 12px;border-radius:999px;font-size:.92rem}
+nav a[aria-current="page"]{background:var(--ink);color:var(--surface)}
+nav a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{padding-block:18px 60px}
+h2{font-family:var(--f-display);font-size:1.15rem;margin:0;text-wrap:balance}
+h3{font-family:var(--f-display);font-size:1rem;margin:0}
+.muted{color:var(--muted)}
+.small{font-size:.83rem}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.between{justify-content:space-between}
+.grid2{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:820px){.grid2{grid-template-columns:1fr 1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;min-width:0}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media(max-width:560px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px}
+.kpi b{display:block;font-family:var(--f-mono);font-size:1.35rem;font-variant-numeric:tabular-nums}
+.kpi span{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+button,.btn{font:inherit;font-weight:500;font-size:.9rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 12px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;line-height:1.2}
+button:hover,.btn:hover{border-color:var(--accent)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn-wa{background:var(--wa);border-color:var(--wa);color:#fff}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--muted)}
+.btn-danger{color:var(--bad)}
+button[disabled]{opacity:.5;cursor:not-allowed}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:5px 11px;font-size:.84rem;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:90px;line-height:1.5}
+label{display:flex;flex-direction:column;gap:4px;font-size:.82rem;color:var(--muted);font-weight:500;min-width:0}
+label.check{flex-direction:row;align-items:center;gap:8px;color:var(--ink);font-size:.9rem;font-weight:400}
+label.check input{width:18px;height:18px;flex:none;accent-color:var(--accent)}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media(min-width:700px){.fields{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.fields .wide{grid-column:1/-1}
+.cards{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:820px){.cards{grid-template-columns:1fr 1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:8px;cursor:pointer;min-width:0;text-align:start;color:inherit;font:inherit}
+.card:hover{border-color:var(--accent)}
+.card-top{display:flex;gap:10px;align-items:flex-start}
+.score{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-mono);font-weight:500;font-size:.95rem;border:3px solid var(--line)}
+.score.hi{border-color:var(--good);color:var(--good)}.score.mid{border-color:var(--sun);color:var(--warn)}.score.lo{border-color:var(--bad);color:var(--bad)}
+.card h3{overflow-wrap:anywhere}
+.price{font-family:var(--f-mono);font-size:1.05rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{font-size:.75rem;padding:2px 8px;border-radius:999px;background:var(--surface-2);color:var(--muted)}
+.tag.good{background:var(--good-soft);color:var(--good)}.tag.bad{background:var(--bad-soft);color:var(--bad)}.tag.warn{background:var(--warn-soft);color:var(--warn)}
+.status{font-size:.75rem;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.status.signe{background:var(--good-soft);color:var(--good)}.status.refuse{background:var(--bad-soft);color:var(--bad)}.status.repere{background:var(--surface-2);color:var(--muted)}
+.alert{border-radius:var(--r);padding:10px 12px;background:var(--warn-soft);color:var(--ink);border:1px solid var(--line);font-size:.9rem}
+.alert.info{background:var(--accent-soft)}
+.empty{text-align:center;padding:28px 14px;color:var(--muted);border:1px dashed var(--line);border-radius:var(--r)}
+.list{display:flex;flex-direction:column}
+.list > *{padding-block:9px;border-bottom:1px solid var(--line)}
+.list > *:last-child{border-bottom:0}
+dialog{border:0;padding:0;border-radius:14px;background:var(--bg);color:var(--ink);width:min(760px,100vw - 16px);max-height:calc(100dvh - 24px);overflow:auto}
+dialog::backdrop{background:rgba(10,15,25,.55)}
+.sheet-head{position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--line);padding:12px 14px;display:flex;gap:10px;align-items:center;z-index:2}
+.sheet-body{padding:14px;display:flex;flex-direction:column;gap:14px}
+.msgbox{display:flex;flex-direction:column;gap:8px}
+.msgbox textarea{min-height:150px;font-size:.95rem}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;border-radius:0;padding:6px 10px;font-size:.84rem}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:10px;font-size:.9rem;z-index:50;max-width:calc(100vw - 32px)}
+.confirm{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--warn-soft);padding:8px 10px;border-radius:8px;font-size:.88rem}
+.src a{color:var(--accent);font-weight:500}
+.thumb{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;background:var(--surface-2);display:block}
+.gallery{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px}
+.gallery img{flex:none;width:min(82%,420px);aspect-ratio:4/3;object-fit:cover;border-radius:10px;scroll-snap-align:start;background:var(--surface-2)}
+.notel{background:var(--surface-2);border-radius:8px;padding:10px}
+.he-text{direction:rtl;text-align:right;font-size:1rem}
+.timeline{font-size:.83rem;color:var(--muted)}
+.timeline div{display:flex;gap:8px}
+.timeline .num{flex:none}
+a{color:var(--accent)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 34 34" aria-hidden="true"><rect x="1" y="1" width="32" height="32" rx="8" fill="var(--accent)"/><rect x="8" y="9" width="18" height="17" rx="1.5" fill="none" stroke="var(--accent-ink)" stroke-width="2"/><path d="M8 15h18M14 15v11M20 15v11" stroke="var(--accent-ink)" stroke-width="2"/><circle cx="25" cy="8" r="3.2" fill="var(--sun)"/></svg>
+      <h1>Dira Tel Aviv<span class="he">דירה</span></h1>
+      <div class="sync"><span class="dot" id="syncDot"></span><span id="syncText">Connexion…</span></div>
+    </div>
+    <nav id="nav" aria-label="Sections">
+      <a href="#annonces">Annonces</a>
+      <a href="#ajouter">+ Ajouter</a>
+      <a href="#agences">Agences</a>
+      <a href="#dossier">Dossier</a>
+      <a href="#chercher">Où chercher</a>
+      <a href="#conseils">Conseils</a>
+      <a href="#profil">Profil</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="main"></main>
+
+<dialog id="sheet" aria-label="Fiche appartement"></dialog>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+"use strict";
+/* ---------- constants ---------- */
+const STATUSES=[
+ ["repere","Repéré"],["contacte","Contacté"],["reponse","A répondu"],["visite_prevue","Visite prévue"],
+ ["visite","Visité"],["dossier","Dossier envoyé"],["nego","Négociation"],["signe","Signé 🎉"],["refuse","Abandonné"]];
+const STATUS_LABEL=Object.fromEntries(STATUSES);
+const QUARTIERS=["Lev Ha'ir (centre)","Vieux Nord","Nouveau Nord","Florentin","Neve Tzedek","Kerem HaTeimanim","Montefiore / Rothschild","Kikar HaMedina","Bavli","Yad Eliyahu","Sarona / Kirya","Shapira / Sud","Ramat Hahayal","Autre"];
+const FAV_Q=["Lev Ha'ir (centre)","Vieux Nord","Florentin","Neve Tzedek","Kerem HaTeimanim","Montefiore / Rothschild","Nouveau Nord"];
+const SOURCES=["Yad2","Madlan","Homeless","Komo","Facebook","Agence","WhatsApp","Bouche à oreille","Autre"];
+const VISIT_CHECK=[
+ ["mamad","Mamad (ממ״ד) dans l'appart, ou abri (מקלט) à moins de 1 min"],
+ ["eau","Pression de l'eau + eau chaude (ouvrir douche et évier)"],
+ ["dud","Chauffe-eau / dud shemesh : âge, minuteur, solaire ?"],
+ ["humid","Humidité, moisissures, traces d'infiltration (plafonds, coins, salle de bain)"],
+ ["clim","Clim dans chaque pièce ? Âge, télécommandes, qui paie l'entretien"],
+ ["fenetres","Fenêtres et volets (trissim) : ferment bien ? Moustiquaires ?"],
+ ["bruit","Bruit : rue, bars, chantier, voisins (revenir le soir si possible)"],
+ ["soleil","Orientation / lumière ; appart traversant ?"],
+ ["elec","Prises, tableau électrique, wifi / fibre disponible"],
+ ["cuisine","Cuisine : plaques, four, frigo inclus ? Machine à laver ?"],
+ ["cafards","Cafards / nuisibles : regarder sous l'évier"],
+ ["escalier","Escalier, ascenseur (ascenseur de Shabbat ?), état des parties communes"],
+ ["poubelles","Poubelles, local vélo, stockage"],
+ ["tama","Chantier TAMA 38 / pinui binui prévu dans l'immeuble ou à côté ?"],
+ ["inclus","Liste écrite des appareils qui restent (frigo, clim, machine…)"],
+ ["photos","Photos + vidéo de tout l'appart (état des lieux)"],
+ ["charges","Montant exact arnona + vaad bayit demandé et noté"],
+ ["garanties","Garanties demandées (chèques, garants, garantie bancaire) notées"],
+];
+const DOSSIER=[
+ ["Identité",[["passeports","Passeports (toi + ta cousine)"],["teudat_ole","Teudat olé (תעודת עולה)"],["teudat_zehut","Teudat zehut (ת״ז) ou numéro provisoire"]]],
+ ["Argent",[["compte","Compte bancaire israélien ouvert"],["chequier","Carnet de chèques (indispensable pour loyer + garanties)"],["revenus","Preuve de revenus : fiches de paie, contrat, relevés FR, ou lettre employeur"],["epargne","Relevé d'épargne (rassure quand pas encore de salaire israélien)"],["sal_klita","Attestation sal klita / Misrad HaKlita"]]],
+ ["Garanties",[["arevim","2 garants (ערבים) avec salaire israélien, si possible"],["garantie_banc","Garantie bancaire (ערבות בנקאית) possible : demander à la banque combien de mois"],["depot","Dépôt / chèque de garantie prêt (écrire dessus : לא להפקדה ללא הודעה מראש בכתב)"],["alt_garantie","Plan B sans garants : 3-6 mois d'avance, société de garantie ou assurance loyer"]]],
+ ["Présentation",[["lettre","Petite présentation en hébreu + anglais (dans l'app)"],["dispos","Créneaux de visite des 7 prochains jours"],["contact","Numéro israélien + WhatsApp actif"]]],
+ ["Avant de signer",[["bail","Faire relire le bail (חוזה שכירות) par un avocat ou un ami israélien"],["clause","Clause de sortie anticipée + option de prolongation"],["etat","État des lieux écrit + photos datées"],["compteurs","Relevé des compteurs (eau, électricité, gaz) le jour de l'entrée"],["arnona_transfer","Arnona à vos DEUX noms + demande de réduction olim le jour même (pas rétroactif)"],["aide_loyer","Vos deux noms sur le bail (aide au loyer de l'État dès le 7e mois, pour chacun)"],["courtage","Ne rien signer avec un agent sans lire (frais = 1 mois + TVA)"]]],
+];
+const DEFAULT_PROFILE={
+  noms:"Dov et ma cousine", nomsHe:"דב ובת הדודה שלו", signature:"Dov", tel:"", email:"",
+  dispos:"tous les jours, dès que possible", disposHe:"בכל יום, מתי שנוח לך", budget:11000, budgetCible:9500, prixMin:8100,
+  emploi:"ingénieur biomédical / développeur, et ma cousine travaille aussi", emploiHe:"מהנדס ביו-רפואי ומפתח תוכנה, ובת הדודה שלי עובדת גם",
+};
+
+/* ---------- utils ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const num=v=>{const n=Number(String(v??"").replace(/[^\d.]/g,""));return isFinite(n)&&n>0?n:0};
+const fmt=n=>n?n.toLocaleString("fr-FR")+" ₪":"—";
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const nowISO=()=>new Date().toISOString();
+const safeUrl=u=>/^https:\/\//i.test(String(u||""))?u:"";
+function waNumber(t){let d=String(t||"").replace(/\D/g,"");if(!d)return"";if(d.startsWith("00"))d=d.slice(2);if(d.startsWith("0"))d="972"+d.slice(1);return d}
+function waLink(phone,text){const n=waNumber(phone);return "https://wa.me/"+(n||"")+"?text="+encodeURIComponent(text||"")}
+function toast(m){const t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2600)}
+async function copy(text){try{await navigator.clipboard.writeText(text);toast("Copié")}catch(e){toast("Copie impossible ici : sélectionne le texte")}}
+function relTime(iso){if(!iso)return"";const d=(Date.now()-new Date(iso))/36e5;if(d<1)return"il y a "+Math.max(1,Math.round(d*60))+" min";if(d<48)return"il y a "+Math.round(d)+" h";return"il y a "+Math.round(d/24)+" j"}
+function relDay(d){if(!d)return"";const t=new Date(d);if(isNaN(t))return String(d);const days=Math.floor((Date.now()-t)/864e5);if(days<=0)return"aujourd'hui";if(days===1)return"hier";return"il y a "+days+" j ("+t.toLocaleDateString("fr-FR",{day:"numeric",month:"short"})+")"}
+function fmtDT(iso){if(!iso)return"";const d=new Date(iso);if(isNaN(d))return iso;return d.toLocaleString("fr-FR",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
+
+/* ---------- store (db capability, localStorage fallback) ---------- */
+const state={apts:new Map(),agencies:new Map(),profile:{...DEFAULT_PROFILE},dossier:{},mode:"loading",filter:"actifs",sort:"score",q:"",showAll:false,touched:new Set(),deleted:new Set(),listingsAt:""};
+let db=null, mcp=null, sample=null;
+const LS="dira-tlv-v1";
+function lsLoad(){try{return JSON.parse(localStorage.getItem(LS)||"{}")}catch(e){return{}}}
+function lsSave(){if(state.mode!=="local"&&state.mode!=="static")return;
+  const keep=a=>state.mode==="local"||state.touched.has(a.id);
+  try{localStorage.setItem(LS,JSON.stringify({apts:[...state.apts.values()].filter(keep),agencies:[...state.agencies.values()].filter(keep),profile:state.profile,dossier:state.dossier,deleted:[...state.deleted]}))}catch(e){}}
+const store={
+  async put(col,id,data){
+    const map=col==="apts"?state.apts:state.agencies; map.set(id,{...data,id}); state.touched.add(id);
+    if(db){try{await db.collection(col).doc(id).set(stripId(data))}catch(e){writeErr(e)}}else lsSave();
+    render();
+  },
+  async del(col,id){const map=col==="apts"?state.apts:state.agencies;map.delete(id);state.deleted.add(id);state.touched.delete(id);
+    if(db){try{await db.collection(col).doc(id).delete()}catch(e){writeErr(e)}}else lsSave(); render()},
+  async putDoc(path,data){ if(db){try{await db.doc(path).set(data)}catch(e){writeErr(e)}}else lsSave() }
+};
+function stripId(d){const o={...d};delete o.id;return o}
+function writeErr(e){toast(e&&e.code==="quota_exceeded"?"Base pleine : supprime des annonces abandonnées":"Enregistrement refusé ("+(e&&e.code||"erreur")+")")}
+function setSync(kind,text){$("#syncDot").className="dot "+(kind||"");$("#syncText").textContent=text}
+
+async function boot(){
+  render();
+  const c=window.claude;
+  const tryUse=n=>c&&c.use?c.use(n).catch(()=>null):Promise.resolve(null);
+  const [d,m,s]=await Promise.all([tryUse("db"),tryUse("mcp"),tryUse("sample")]);
+  mcp=m; sample=s;
+  if(!d){let base=null;
+    if(!c&&/^https?:$/.test(location.protocol)){try{const r=await fetch("data/listings.json",{cache:"no-store"});if(r.ok)base=await r.json()}catch(e){}}
+    startLocal(base);return}
+  db=d; state.mode="db"; setSync("warn","Chargement…");
+  const timer=setTimeout(()=>setSync("warn","Données injoignables pour l'instant"),10000);
+  let first=0;const done=()=>{if(++first>=2){clearTimeout(timer);setSync("ok","Partagé · synchro")}};
+  db.collection("apts").onSnapshot(snap=>{state.apts=new Map(snap.docs.map(x=>[x.id,{...x.data(),id:x.id}]));if(!snap.metadata.fromCache)done();render()},e=>{clearTimeout(timer);setSync("warn","Synchro coupée ("+e.code+")")});
+  db.collection("agencies").onSnapshot(snap=>{state.agencies=new Map(snap.docs.map(x=>[x.id,{...x.data(),id:x.id}]));if(!snap.metadata.fromCache)done();render()},()=>{});
+  db.doc("settings/profile").onSnapshot(s=>{if(s.exists)state.profile={...DEFAULT_PROFILE,...s.data()};render()},()=>{});
+  db.doc("settings/dossier").onSnapshot(s=>{if(s.exists)state.dossier={...(s.data().checked||{})};render()},()=>{});
+}
+function startLocal(base){
+  state.mode=base?"static":"local";const l=lsLoad();
+  (l.deleted||[]).forEach(id=>state.deleted.add(id));
+  if(base){(base.apts||[]).forEach(a=>{if(a&&a.id&&!state.deleted.has(a.id))state.apts.set(a.id,a)});(base.agencies||[]).forEach(a=>{if(a&&a.id&&!state.deleted.has(a.id))state.agencies.set(a.id,a)});state.listingsAt=base.updatedAt||""}
+  (l.apts||[]).forEach(a=>{state.apts.set(a.id,a);state.touched.add(a.id)});(l.agencies||[]).forEach(a=>{state.agencies.set(a.id,a);state.touched.add(a.id)});
+  if(l.profile)state.profile={...DEFAULT_PROFILE,...l.profile};if(l.dossier)state.dossier=l.dossier;
+  if(base){setSync("ok","Annonces "+(state.listingsAt?relTime(state.listingsAt):"à jour"));setupPWA()}else setSync("warn","Local");
+  render();
+}
+function setupPWA(){
+  try{if(!document.querySelector('link[rel="manifest"]')){const l=document.createElement("link");l.rel="manifest";l.href="manifest.json";document.head.appendChild(l)}
+    if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}
+}
+
+/* ---------- scoring ---------- */
+function totalCost(a){return num(a.prix)+num(a.arnona)+num(a.vaad)}
+function score(a){
+  const p=state.profile;let s=50;const prix=num(a.prix);
+  if(prix&&prix<prixMin())s-=35;
+  if(prix){const cible=num(p.budgetCible)||9500,max=num(p.budget)||11000;
+    if(prix<=cible-1000)s+=20;else if(prix<=cible)s+=14;else if(prix<=max)s+=4;else s-=25}
+  if(a.mamad==="oui")s+=15;else if(a.mamad==="abri")s+=6;else if(a.mamad==="non")s-=8;
+  const et=num(a.etage);if(et>=3&&a.ascenseur==="non")s-=12;if(a.ascenseur==="oui")s+=4;
+  if(a.balcon)s+=8;if(a.clim)s+=4;if(a.meuble)s+=3;if(a.parking)s+=2;
+  if(FAV_Q.includes(a.quartier))s+=6;
+  if(a.note)s+=(num(a.note)-3)*6;
+  if(num(a.pieces)&&num(a.pieces)<3)s-=20;
+  return Math.max(0,Math.min(100,Math.round(s)));
+}
+function prixMin(){return num(state.profile.prixMin)||8100}
+function hiddenByRule(a){const p=num(a.prix);return !!p&&p<prixMin()&&(a.status||"repere")==="repere"}
+function photoList(a){const as=(a.photoAssets||[]).filter(u=>/^(\/_blob\/|https:\/\/)/.test(String(u)));if(as.length)return as;
+  if(state.mode==="static"||state.mode==="local")return (a.photos||[]).filter(u=>/^https:\/\//.test(String(u)));return []}
+function hasTel(a){return waNumber(a.contactTel).length>=11}
+function mapsLink(a){const q=(a.rueHe||a.rue||a.titre||"")+", תל אביב";return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q)}
+function scoreClass(n){return n>=70?"hi":n>=50?"mid":"lo"}
+
+/* ---------- message templates ---------- */
+function cleanName(n){n=String(n||"").replace(/\(.*?\)/g," ").replace(/\b(agence|agency|agent|real estate|nekhasim|nechasim|נכסים|תיווך)\b.*$/i,"").trim();if(!n||/\d/.test(n))return"";return n.split(/\s+/)[0]}
+function vars(a,p){
+  a=a||{};p=p||state.profile;
+  const isAgencyName=/(agence|agency|nekhasim|nechasim|נכסים|real estate|תיווך)/i.test(String(a.contactNom||""));
+  const nm=isAgencyName?"":cleanName(a.contactNom),nmHe=cleanName(a.contactNomHe)||(/[\u0590-\u05FF]/.test(nm)?nm:"");
+  return {rue:a.rue||"",rueHe:a.rueHe||"",contactHe:nmHe,quartier:a.quartier||"",prix:num(a.prix)?num(a.prix).toLocaleString("fr-FR"):"",pieces:a.pieces||"3",
+    contact:/[\u0590-\u05FF]/.test(nm)?"":nm,dispos:p.dispos,disposHe:p.disposHe,budget:(num(p.budget)||11000).toLocaleString("fr-FR"),
+    noms:p.noms,nomsHe:p.nomsHe,sig:p.signature||"",tel:p.tel||"",emploi:p.emploi,emploiHe:p.emploiHe,offre:a.offre||""};
+}
+const T={
+ premier:{label:"1er contact",
+  he:v=>`שלום${v.contactHe?" "+v.contactHe:""},\nראיתי את המודעה על הדירה${(v.rueHe||v.rue)?" ב"+(v.rueHe||v.rue):""}${v.prix?" ב-"+v.prix+" ₪":""}. האם היא עדיין פנויה?\nאני ובת הדודה שלי עולים חדשים מצרפת, שנינו עובדים, רציניים, בלי חיות, והמסמכים שלנו מוכנים. אנחנו מחפשים לכניסה מיידית ולטווח ארוך.\nנשמח לבוא לראות אותה בהקדם – אנחנו זמינים ${v.disposHe}. מתי נוח לך?\nתודה רבה,\n${v.sig}`,
+  en:v=>`Hi${v.contact?" "+v.contact:""},\nI saw your listing for the apartment${v.rue?" on "+v.rue:""}${v.prix?" at "+v.prix+" ₪":""}. Is it still available?\nMy cousin and I are new immigrants from France, both working, serious, no pets, with all our documents ready. We're looking to move in right away, for the long term.\nWe'd love to visit as soon as possible – we're available ${v.dispos}. When works for you?\nThanks a lot,\n${v.sig}`,
+  fr:v=>`Bonjour${v.contact?" "+v.contact:""},\nJ'ai vu votre annonce pour l'appartement${v.rue?" rue "+v.rue:""}${v.prix?" à "+v.prix+" ₪":""}. Est-il toujours disponible ?\nMa cousine et moi sommes olim de France, nous travaillons tous les deux, sans animaux, et notre dossier est prêt. Nous cherchons pour une entrée immédiate et sur le long terme.\nNous aimerions le visiter au plus vite : nous sommes disponibles ${v.dispos}. Quand cela vous arrange-t-il ?\nMerci beaucoup,\n${v.sig}`},
+ visite:{label:"Demander visite",
+  he:v=>`שלום${v.contactHe?" "+v.contactHe:""}, אשמח לתאם צפייה בדירה${(v.rueHe||v.rue)?" ב"+(v.rueHe||v.rue):""}. אנחנו זמינים ${v.disposHe}, גם היום אם אפשר. מה מתאים לך?\n${v.sig}`,
+  en:v=>`Hi${v.contact?" "+v.contact:""}, I'd like to schedule a visit to the apartment${v.rue?" on "+v.rue:""}. We're available ${v.dispos}, even today if possible. What suits you?\n${v.sig}`,
+  fr:v=>`Bonjour${v.contact?" "+v.contact:""}, j'aimerais organiser une visite de l'appartement${v.rue?" rue "+v.rue:""}. Nous sommes disponibles ${v.dispos}, même aujourd'hui si possible. Qu'est-ce qui vous arrange ?\n${v.sig}`},
+ questions:{label:"Questions clés",
+  he:v=>`שלום, כמה שאלות לגבי הדירה${(v.rueHe||v.rue)?" ב"+(v.rueHe||v.rue):""}:\n1. כמה ארנונה וכמה ועד בית?\n2. יש ממ״ד בדירה או מקלט בבניין?\n3. באיזו קומה, ויש מעלית?\n4. מתי אפשר להיכנס?\n5. אילו בטחונות נדרשים (צ׳קים, ערבים, ערבות בנקאית)?\n6. יש דמי תיווך?\n7. מה כלול (מזגנים, מקרר, מכונת כביסה)?\nתודה!\n${v.sig}`,
+  en:v=>`Hi, a few questions about the apartment${v.rue?" on "+v.rue:""}:\n1. How much is arnona and vaad bayit?\n2. Is there a mamad in the apartment or a shelter in the building?\n3. Which floor, and is there an elevator?\n4. When can we move in?\n5. What guarantees do you require (checks, guarantors, bank guarantee)?\n6. Is there a broker fee?\n7. What's included (AC, fridge, washing machine)?\nThanks!\n${v.sig}`,
+  fr:v=>`Bonjour, quelques questions sur l'appartement${v.rue?" rue "+v.rue:""} :\n1. Combien d'arnona et de vaad bayit ?\n2. Y a-t-il un mamad dans l'appartement ou un abri dans l'immeuble ?\n3. Quel étage, et y a-t-il un ascenseur ?\n4. Date d'entrée possible ?\n5. Quelles garanties demandez-vous ?\n6. Y a-t-il des frais d'agence ?\n7. Qu'est-ce qui est inclus (clim, frigo, machine à laver) ?\nMerci !\n${v.sig}`},
+ relance:{label:"Relance",
+  he:v=>`שלום שוב${v.contactHe?" "+v.contactHe:""}, רציתי לבדוק אם הדירה${(v.rueHe||v.rue)?" ב"+(v.rueHe||v.rue):""} עדיין רלוונטית. אנחנו עדיין מאוד מעוניינים ויכולים לבוא לראות אותה כבר היום או מחר.\n${v.sig}`,
+  en:v=>`Hi again${v.contact?" "+v.contact:""}, just checking whether the apartment${v.rue?" on "+v.rue:""} is still available. We're still very interested and can come see it today or tomorrow.\n${v.sig}`,
+  fr:v=>`Bonjour${v.contact?" "+v.contact:""}, je me permets de revenir vers vous : l'appartement${v.rue?" rue "+v.rue:""} est-il toujours disponible ? Nous sommes toujours très intéressés et pouvons passer aujourd'hui ou demain.\n${v.sig}`},
+ onveut:{label:"On le prend !",
+  he:v=>`שלום${v.contactHe?" "+v.contactHe:""}, תודה על הצפייה! הדירה מאוד מצאה חן בעינינו ואנחנו רוצים להתקדם עכשיו.\nכל המסמכים מוכנים (דרכונים, תעודות עולה, אישורי הכנסה, בטחונות). מה השלבים הבאים? אפשר לחתום כבר השבוע.\n${v.sig}`,
+  en:v=>`Hi${v.contact?" "+v.contact:""}, thanks for the visit! We really liked the apartment and want to move forward now.\nAll our documents are ready (passports, teudat olé, proof of income, guarantees). What are the next steps? We can sign this week.\n${v.sig}`,
+  fr:v=>`Bonjour${v.contact?" "+v.contact:""}, merci pour la visite ! L'appartement nous plaît beaucoup et nous voulons avancer tout de suite.\nTout notre dossier est prêt (passeports, teudat olé, justificatifs de revenus, garanties). Quelles sont les prochaines étapes ? Nous pouvons signer cette semaine.\n${v.sig}`},
+ nego:{label:"Négocier",
+  he:v=>`שלום${v.contactHe?" "+v.contactHe:""}, הדירה מאוד מתאימה לנו. האם יש גמישות במחיר? נוכל לחתום מהר על חוזה לשנה עם אופציה להארכה${v.offre?" תמורת "+v.offre+" ₪ לחודש":""}. אנחנו שוכרים שקטים ואחראיים.\n${v.sig}`,
+  en:v=>`Hi${v.contact?" "+v.contact:""}, the apartment suits us very well. Is there any flexibility on the price? We can sign quickly for one year with an option to extend${v.offre?" at "+v.offre+" ₪ per month":""}. We're quiet, reliable tenants.\n${v.sig}`,
+  fr:v=>`Bonjour${v.contact?" "+v.contact:""}, l'appartement nous convient très bien. Y a-t-il une marge sur le prix ? Nous pouvons signer rapidement pour un an avec option de prolongation${v.offre?" à "+v.offre+" ₪ par mois":""}. Nous sommes des locataires calmes et fiables.\n${v.sig}`},
+ non:{label:"Refus poli",
+  he:v=>`שלום${v.contactHe?" "+v.contactHe:""}, תודה רבה על הזמן. בסוף החלטנו ללכת על דירה אחרת. בהצלחה!\n${v.sig}`,
+  en:v=>`Hi${v.contact?" "+v.contact:""}, thank you for your time. We've decided to go with another apartment. Good luck!\n${v.sig}`,
+  fr:v=>`Bonjour${v.contact?" "+v.contact:""}, merci beaucoup pour votre temps. Nous avons finalement choisi un autre appartement. Bonne continuation !\n${v.sig}`},
+};
+const AGENCY_T={
+  he:v=>`שלום,\nאני ובת הדודה שלי עולים חדשים מצרפת ומחפשים דירת 3 חדרים (סלון + 2 חדרי שינה) להשכרה בתל אביב: לב העיר, הצפון הישן, הצפון החדש, נווה צדק, פלורנטין, כרם התימנים ודומיהן (לא יפו ולא רמת אביב).\nתקציב: עד ${v.budget} ₪ לחודש. כניסה מיידית, לטווח ארוך.\nשנינו עובדים (${v.emploiHe}), רציניים, בלי חיות, והמסמכים מוכנים. נשמח שתעדכנו אותנו בכל דירה מתאימה${v.tel?", גם בוואטסאפ: "+v.tel:""}.\nתודה רבה,\n${v.sig}`,
+  en:v=>`Hello,\nMy cousin and I are new immigrants from France looking to rent a 3-room apartment (living room + 2 bedrooms) in central Tel Aviv: Lev Ha'ir, Old North, New North, Neve Tzedek, Florentin, Kerem HaTeimanim and similar (not Jaffa, not Ramat Aviv).\nBudget: up to ${v.budget} ₪/month. Immediate move-in, long term.\nWe both work (${v.emploi}), serious, no pets, and our documents are ready. Please send us anything that fits${v.tel?", WhatsApp is best: "+v.tel:""}.\nMany thanks,\n${v.sig}`,
+  fr:v=>`Bonjour,\nMa cousine et moi sommes olim de France et cherchons à louer un 3 pièces (salon + 2 chambres) à Tel Aviv centre : Lev Ha'ir, Vieux Nord, Nouveau Nord, Neve Tzedek, Florentin, Kerem HaTeimanim… (pas Yafo, pas Ramat Aviv).\nBudget : jusqu'à ${v.budget} ₪/mois. Entrée immédiate, long terme.\nNous travaillons tous les deux (${v.emploi}), sommes sérieux, sans animaux, et notre dossier est prêt. Merci de nous envoyer tout ce qui correspond${v.tel?", idéalement par WhatsApp : "+v.tel:""}.\nMerci beaucoup,\n${v.sig}`,
+};
+
+/* ---------- Claude helpers ---------- */
+async function claudeExtract(text){
+  const prompt=`Tu aides deux olim à chercher un appartement à Tel Aviv. Voici le texte d'une annonce (souvent en hébreu, copiée de Yad2, Madlan, Facebook ou WhatsApp). Extrais les informations et réponds UNIQUEMENT avec un objet JSON, champs absents = "" :
+{"titre": "titre court en français, ex: 3 pièces Dizengoff", "rue": "rue (+ numéro si connu), en lettres latines", "rueHe": "la même rue écrite en hébreu", "quartier": "un de: ${QUARTIERS.join(" | ")}", "prix": nombre en shekels/mois ou "", "arnona": nombre/mois ou "", "vaad": nombre/mois ou "", "pieces": nombre de pièces israélien (חדרים) ou "", "surface": m² ou "", "etage": nombre ou "", "ascenseur": "oui"|"non"|"", "mamad": "oui"|"abri"|"non"|"", "balcon": true|false, "clim": true|false, "meuble": true|false, "parking": true|false, "animaux": "oui"|"non"|"", "dispo": "date d'entrée AAAA-MM-JJ ou texte", "contactNom": "prénom/nom en lettres latines", "contactNomHe": "le même en hébreu si l'annonce est en hébreu", "contactTel": "", "contactEmail": "", "contactType": "proprio"|"agent"|"", "frais": "frais d'agence mentionnés ou ''", "resume": "2 phrases en français: points forts / points faibles / pièges éventuels"}
+
+Annonce :
+"""${text.slice(0,8000)}"""`;
+  return sample.json(prompt,{modelTier:"quick"});
+}
+async function claudeMessage(a,kind,lang,onText){
+  const v=vars(a);const langName={he:"hébreu (naturel, comme un Israélien sur WhatsApp, pas trop formel)",en:"anglais",fr:"français"}[lang];
+  const prompt=`Écris un message WhatsApp court en ${langName} pour le contact d'une annonce d'appartement à Tel Aviv.
+Type de message : ${T[kind]?T[kind].label:kind}.
+Qui écrit : ${v.sig}, qui cherche avec sa cousine ; olim de France, tous les deux travaillent (${v.emploi}), pas d'animaux, dossier prêt, entrée immédiate, long terme. Disponibilités : ${v.dispos}.
+Annonce : ${JSON.stringify({titre:a.titre,rue:a.rue,quartier:a.quartier,prix:a.prix,pieces:a.pieces,etage:a.etage,mamad:a.mamad,balcon:a.balcon,dispo:a.dispo,contact:a.contactNom,type:a.contactType,notes:a.notes,resume:a.resume}).slice(0,3000)}
+Règles : 3 à 6 lignes, chaleureux et direct, mentionne un détail précis de l'annonce pour montrer qu'on l'a lue, termine par une question qui appelle une réponse rapide, signe "${v.sig}". Pas d'emoji excessif. Réponds uniquement avec le message.`;
+  const r=await sample(prompt,{modelTier:"default",cache:false,onText:u=>onText&&onText(u.text)});
+  return r.text.trim();
+}
+async function gmail(tool,to,subject,body){
+  if(!mcp)throw{code:"capability_disabled"};
+  return mcp.callTool("Gmail",tool,{to:[to],subject,body});
+}
+function mcpErrText(e){
+  const c=e&&e.code;
+  return {needs_reauth:"Reconnecte Gmail dans claude.ai → Paramètres → Connecteurs.",server_not_connected:"Ajoute le connecteur Gmail dans claude.ai → Paramètres → Connecteurs.",
+    not_in_manifest:"Gmail n'est pas autorisé pour cette page (menu Permissions de l'artefact).",approval_required:"Il faut autoriser Gmail : réessaie et clique Autoriser.",
+    blocked_by_policy:"Ton organisation bloque cet outil Gmail.",capability_disabled:"Gmail n'est pas disponible dans cette vue (ouvre la page dans claude.ai).",
+    tool_error:"Gmail a refusé : "+(e.message||"").slice(0,140),server_unavailable:"Gmail ne répond pas. Vérifie tes brouillons/envoyés avant de réessayer."}[c]||("Erreur Gmail ("+(c||"inconnue")+"). Vérifie tes brouillons/envoyés avant de réessayer.");
+}
+
+/* ---------- routing / render ---------- */
+const ROUTES=["annonces","ajouter","agences","dossier","chercher","conseils","profil"];
+function route(){const h=location.hash.slice(1);return ROUTES.includes(h)?h:"annonces"}
+window.addEventListener("hashchange",()=>{render();window.scrollTo(0,0)});
+function render(){
+  const r=route();
+  document.querySelectorAll("#nav a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+r?"page":"false"));
+  const m=$("#main");
+  const keepFocus=document.activeElement&&m.contains(document.activeElement)&&document.activeElement.id;
+  if(r==="ajouter"&&m.dataset.view==="ajouter")return; // don't wipe a form in progress
+  if(r==="profil"&&m.dataset.view==="profil"&&keepFocus)return;
+  m.dataset.view=r;
+  ({annonces:viewAnnonces,ajouter:viewAjouter,agences:viewAgences,dossier:viewDossier,chercher:viewChercher,conseils:viewConseils,profil:viewProfil})[r](m);
+  if(keepFocus){const el=document.getElementById(keepFocus);if(el){el.focus();if(el.setSelectionRange&&el.value!=null){try{el.setSelectionRange(el.value.length,el.value.length)}catch(e){}}}}
+}
+
+/* ----- Annonces ----- */
+function viewAnnonces(m){
+  const all=[...state.apts.values()];
+  const hiddenN=all.filter(hiddenByRule).length;
+  const apts=state.showAll?all:all.filter(a=>!hiddenByRule(a));
+  const active=apts.filter(a=>!["signe","refuse"].includes(a.status));
+  const visites=apts.filter(a=>a.visiteAt&&new Date(a.visiteAt)>Date.now()-3*36e5).sort((a,b)=>new Date(a.visiteAt)-new Date(b.visiteAt));
+  const relancer=apts.filter(a=>a.status==="contacte"&&a.contactedAt&&Date.now()-new Date(a.contactedAt)>20*36e5);
+  const avgScore=active.length?Math.round(active.reduce((s,a)=>s+score(a),0)/active.length):0;
+  let list=apts.filter(a=>{
+    if(state.filter==="actifs"&&["signe","refuse"].includes(a.status))return false;
+    if(state.filter==="nouveaux"&&!(a.auto&&!a.seen&&a.status==="repere"))return false;
+    if(!["actifs","tous","nouveaux"].includes(state.filter)&&a.status!==state.filter)return false;
+    if(state.q){const q=state.q.toLowerCase();return [a.titre,a.rue,a.quartier,a.notes,a.contactNom].join(" ").toLowerCase().includes(q)}
+    return true});
+  const sorters={score:(a,b)=>score(b)-score(a),prix:(a,b)=>(num(a.prix)||1e9)-(num(b.prix)||1e9),recent:(a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)),pub:(a,b)=>String(b.publishedAt||b.createdAt).localeCompare(String(a.publishedAt||a.createdAt))};
+  list.sort(sorters[state.sort]);
+  m.innerHTML=`<div class="stack">
+   ${state.mode==="local"?`<div class="alert">Mode local : les données restent dans ce navigateur. Ouvre la page depuis claude.ai et connecte-toi pour la partager avec ta cousine.</div>`:""}
+   ${state.mode==="static"?`<div class="alert info small">Les nouvelles annonces arrivent 3 fois par jour${state.listingsAt?" (dernier scan "+esc(relTime(state.listingsAt))+")":""}. Tes étapes et notes restent sur ce téléphone.</div>`:""}
+   <div class="kpis">
+     <div class="kpi"><span>En cours</span><b>${active.length}</b></div>
+     <div class="kpi"><span>Visites à venir</span><b>${visites.length}</b></div>
+     <div class="kpi"><span>À relancer</span><b>${relancer.length}</b></div>
+     <div class="kpi"><span>Nouveaux (Claude)</span><b>${apts.filter(a=>a.auto&&!a.seen&&a.status==="repere").length}</b></div>
+   </div>
+   ${visites.length||relancer.length?`<div class="grid2">
+     ${visites.length?`<div class="panel"><h3>Prochaines visites</h3><div class="list">${visites.slice(0,5).map(a=>`<div class="row between"><button class="btn-ghost" data-open="${esc(a.id)}" style="padding:0;text-align:start">${esc(a.titre||a.rue||"Appartement")}</button><span class="num small">${esc(fmtDT(a.visiteAt))}</span></div>`).join("")}</div></div>`:""}
+     ${relancer.length?`<div class="panel"><h3>À relancer (contacté il y a plus de 20 h sans réponse)</h3><div class="list">${relancer.map(a=>`<div class="row between"><button class="btn-ghost" data-open="${esc(a.id)}" style="padding:0;text-align:start">${esc(a.titre||a.rue||"Appartement")}</button>${hasTel(a)?`<a class="btn btn-wa" target="_blank" rel="noopener" href="${esc(waLink(a.contactTel,T.relance.he(vars(a))))}" data-log="${esc(a.id)}">Relancer</a>`:`<button data-open="${esc(a.id)}">Ouvrir</button>`}</div>`).join("")}</div></div>`:""}
+   </div>`:""}
+   <div class="row between">
+     <input id="q" type="search" placeholder="Rechercher une rue, un quartier, un contact…" value="${esc(state.q)}" style="flex:1;min-width:180px">
+     <select id="sort" style="width:auto"><option value="score">Tri : score</option><option value="prix">Tri : prix</option><option value="recent">Tri : ajout</option><option value="pub">Tri : date de publication</option></select>
+     <a class="btn btn-primary" href="#ajouter">+ Ajouter</a>
+   </div>
+   ${hiddenN?`<div class="small muted row">${state.showAll?"Annonces sous "+esc(fmt(prixMin()))+" affichées.":esc(hiddenN+" annonce"+(hiddenN>1?"s":"")+" sous "+fmt(prixMin())+" masquée"+(hiddenN>1?"s":"")+" (ta règle).")} <button class="btn-ghost" id="toggleHidden" style="padding:2px 6px">${state.showAll?"Masquer":"Afficher quand même"}</button></div>`:""}
+   <div class="chips" role="group" aria-label="Filtrer par étape">
+     ${[["nouveaux","Nouveaux (Claude)"],["actifs","En cours"],["tous","Tous"],...STATUSES].map(([k,l])=>`<button class="chip" data-filter="${k}" aria-pressed="${state.filter===k}">${esc(l)} <span class="num">${k==="nouveaux"?apts.filter(a=>a.auto&&!a.seen&&a.status==="repere").length:k==="actifs"?active.length:k==="tous"?apts.length:apts.filter(a=>a.status===k).length}</span></button>`).join("")}
+   </div>
+   ${list.length?`<div class="cards">${list.map(cardHTML).join("")}</div>`:
+     `<div class="empty"><p><b>${apts.length?"Rien dans ce filtre.":"Aucune annonce pour l'instant."}</b></p><p>Colle le texte d'une annonce Yad2, Madlan ou Facebook dans « + Ajouter » : Claude remplit la fiche et prépare le message en hébreu.</p><a class="btn btn-primary" href="#ajouter">Ajouter la première annonce</a></div>`}
+  </div>`;
+  $("#sort").value=state.sort;
+  $("#q").oninput=e=>{state.q=e.target.value;clearTimeout(viewAnnonces._t);viewAnnonces._t=setTimeout(render,250)};
+  $("#q").id="q";
+  $("#sort").onchange=e=>{state.sort=e.target.value;render()};
+  if($("#toggleHidden"))$("#toggleHidden").onclick=()=>{state.showAll=!state.showAll;render()};
+  m.querySelectorAll("[data-filter]").forEach(b=>b.onclick=()=>{state.filter=b.dataset.filter;render()});
+  m.querySelectorAll("[data-open]").forEach(b=>b.onclick=e=>{e.stopPropagation();openSheet(b.dataset.open)});
+  m.querySelectorAll("[data-log]").forEach(b=>b.addEventListener("click",()=>logEvent(b.dataset.log,"Relance WhatsApp ouverte")));
+}
+function cardHTML(a){
+  const s=score(a);const tot=totalCost(a);
+  const tags=[];
+  if(a.mamad==="oui")tags.push(["good","Mamad"]);else if(a.mamad==="abri")tags.push(["warn","Abri immeuble"]);else if(a.mamad==="non")tags.push(["bad","Pas d'abri"]);
+  if(a.etage!==""&&a.etage!=null)tags.push([num(a.etage)>=3&&a.ascenseur==="non"?"bad":"",`${a.etage==0?"RDC":"Étage "+a.etage}${a.ascenseur==="oui"?" · ascenseur":a.ascenseur==="non"?" · sans asc.":""}`]);
+  if(a.balcon)tags.push(["good","Balcon"]);if(a.clim)tags.push(["","Clim"]);if(a.meuble)tags.push(["","Meublé"]);if(a.parking)tags.push(["","Parking"]);
+  if(a.dispo)tags.push(["","Dispo "+a.dispo]);
+  const ph=photoList(a)[0];
+  return `<div class="card" data-open="${esc(a.id)}" role="button" tabindex="0">
+    ${ph?`<img class="thumb" src="${esc(ph)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`:""}
+    <div class="card-top">
+      <div class="score ${scoreClass(s)}" title="Score de correspondance">${s}</div>
+      <div style="flex:1;min-width:0">
+        <div class="row between" style="flex-wrap:nowrap;align-items:flex-start"><h3>${esc(a.titre||a.rue||"Appartement")}</h3><span class="status ${esc(a.status)}">${esc(STATUS_LABEL[a.status]||"Repéré")}</span></div>
+        <div class="muted small">${esc([a.quartier,a.rue&&a.titre!==a.rue?a.rue:"",a.pieces?a.pieces+" pièces":"",a.surface?a.surface+" m²":""].filter(Boolean).join(" · "))}</div>
+      </div>
+    </div>
+    <div class="row between"><span class="price">${fmt(num(a.prix))}</span>${tot>num(a.prix)?`<span class="small muted">total/mois <span class="num">${fmt(tot)}</span></span>`:""}</div>
+    ${tags.length?`<div class="tags">${tags.map(([c,t])=>`<span class="tag ${c}">${esc(t)}</span>`).join("")}</div>`:""}
+    <div class="small muted">${a.auto&&!a.seen?`<span class="tag good">Nouveau · trouvé par Claude</span> `:""}${esc(a.source||"")}${a.publishedAt?" · publiée "+esc(relDay(a.publishedAt)):""}${a.createdAt?" · "+(a.auto?"trouvée ":"ajoutée ")+esc(relTime(a.createdAt)):""}${a.visiteAt?" · visite "+esc(fmtDT(a.visiteAt)):""}</div>
+  </div>`;
+}
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches&&e.target.matches(".card[data-open]"))openSheet(e.target.dataset.open)});
+
+/* ----- Ajouter ----- */
+function aptFormFields(a){
+  a=a||{};const opt=(arr,v)=>arr.map(x=>`<option ${x===v?"selected":""}>${esc(x)}</option>`).join("");
+  const tri=(id,v,labels)=>`<select id="${id}"><option value="">?</option>${labels.map(([k,l])=>`<option value="${k}" ${v===k?"selected":""}>${l}</option>`).join("")}</select>`;
+  return `<div class="fields">
+   <label class="wide">Titre<input id="f_titre" value="${esc(a.titre)}" placeholder="3 pièces Dizengoff, 2e étage"></label>
+   <label class="wide">Lien de l'annonce<input id="f_url" type="url" value="${esc(a.url)}" placeholder="https://www.yad2.co.il/…"></label>
+   <label>Rue<input id="f_rue" value="${esc(a.rue)}"></label>
+   <label>Rue (hébreu)<input id="f_rueHe" dir="rtl" value="${esc(a.rueHe)}" placeholder="דיזנגוף 120"></label>
+   <label>Quartier<select id="f_quartier"><option value="">—</option>${opt(QUARTIERS,a.quartier)}</select></label>
+   <label>Source<select id="f_source"><option value="">—</option>${opt(SOURCES,a.source)}</select></label>
+   <label>Étape<select id="f_status">${STATUSES.map(([k,l])=>`<option value="${k}" ${(a.status||"repere")===k?"selected":""}>${l}</option>`).join("")}</select></label>
+   <label>Loyer ₪/mois<input id="f_prix" inputmode="numeric" value="${esc(a.prix)}"></label>
+   <label>Arnona ₪/mois<input id="f_arnona" inputmode="numeric" value="${esc(a.arnona)}"></label>
+   <label>Vaad bayit ₪/mois<input id="f_vaad" inputmode="numeric" value="${esc(a.vaad)}"></label>
+   <label>Pièces (חדרים)<input id="f_pieces" inputmode="decimal" value="${esc(a.pieces||"3")}"></label>
+   <label>Surface m²<input id="f_surface" inputmode="numeric" value="${esc(a.surface)}"></label>
+   <label>Étage<input id="f_etage" inputmode="numeric" value="${esc(a.etage)}"></label>
+   <label>Ascenseur${tri("f_ascenseur",a.ascenseur,[["oui","Oui"],["non","Non"]])}</label>
+   <label>Mamad / abri${tri("f_mamad",a.mamad,[["oui","Mamad dans l'appart"],["abri","Abri immeuble"],["non","Aucun"]])}</label>
+   <label>Animaux${tri("f_animaux",a.animaux,[["oui","Acceptés"],["non","Refusés"]])}</label>
+   <label>Entrée<input id="f_dispo" value="${esc(a.dispo)}" placeholder="immédiate / 2026-12-15"></label>
+   <label>Visite prévue<input id="f_visiteAt" type="datetime-local" value="${esc((a.visiteAt||"").slice(0,16))}"></label>
+   <label>Ma note (1-5)<select id="f_note"><option value="">—</option>${[1,2,3,4,5].map(n=>`<option ${String(a.note)===String(n)?"selected":""}>${n}</option>`).join("")}</select></label>
+   <div class="wide row">
+     <label class="check"><input type="checkbox" id="f_balcon" ${a.balcon?"checked":""}>Balcon</label>
+     <label class="check"><input type="checkbox" id="f_clim" ${a.clim?"checked":""}>Clim</label>
+     <label class="check"><input type="checkbox" id="f_meuble" ${a.meuble?"checked":""}>Meublé</label>
+     <label class="check"><input type="checkbox" id="f_parking" ${a.parking?"checked":""}>Parking</label>
+   </div>
+   <label>Contact<input id="f_contactNom" value="${esc(a.contactNom)}"></label>
+   <label>Contact (hébreu)<input id="f_contactNomHe" dir="rtl" value="${esc(a.contactNomHe)}"></label>
+   <label>Téléphone<input id="f_contactTel" type="tel" value="${esc(a.contactTel)}" placeholder="05X-XXXXXXX"></label>
+   <label>Email<input id="f_contactEmail" type="email" value="${esc(a.contactEmail)}"></label>
+   <label>Type<select id="f_contactType"><option value="">—</option><option value="proprio" ${a.contactType==="proprio"?"selected":""}>Propriétaire</option><option value="agent" ${a.contactType==="agent"?"selected":""}>Agent (תיווך)</option></select></label>
+   <label class="wide">Notes<textarea id="f_notes" dir="auto" placeholder="Impressions, frais d'agence, garanties demandées…">${esc(a.notes)}</textarea></label>
+  </div>`;
+}
+const FIELDS=["titre","url","rue","rueHe","contactNomHe","quartier","source","status","prix","arnona","vaad","pieces","surface","etage","ascenseur","mamad","animaux","dispo","visiteAt","note","contactNom","contactTel","contactEmail","contactType","notes"];
+const BOOLS=["balcon","clim","meuble","parking"];
+function readForm(root){const o={};FIELDS.forEach(f=>{const el=$("#f_"+f,root);if(el)o[f]=el.value.trim()});BOOLS.forEach(f=>{const el=$("#f_"+f,root);if(el)o[f]=el.checked});if(o.visiteAt)o.visiteAt=new Date(o.visiteAt).toISOString();return o}
+function fillForm(root,d){FIELDS.forEach(f=>{const el=$("#f_"+f,root);if(el&&d[f]!==undefined&&d[f]!==""&&d[f]!==null){if(el.tagName==="SELECT"){const v=String(d[f]);if([...el.options].some(o=>o.value===v||o.text===v))el.value=[...el.options].find(o=>o.value===v||o.text===v).value}else el.value=d[f]}});BOOLS.forEach(f=>{const el=$("#f_"+f,root);if(el&&typeof d[f]==="boolean")el.checked=d[f]})}
+function viewAjouter(m){
+  m.innerHTML=`<div class="stack">
+   <div class="panel stack">
+     <div><h2>Coller une annonce</h2><p class="muted small" style="margin:4px 0 0">Copie tout le texte de l'annonce (Yad2, Madlan, Facebook, WhatsApp…), même en hébreu. Claude remplit la fiche pour toi.</p></div>
+     <textarea id="paste" dir="auto" placeholder="להשכרה 3 חדרים בדיזנגוף, קומה 2 עם מעלית, ממ״ד, מרפסת… 9,500 ₪"></textarea>
+     <div class="row"><button class="btn-primary" id="extract" ${sample?"":"disabled"}>Analyser avec Claude</button><span class="small muted" id="extractMsg">${sample?"":"L'analyse par Claude marche quand la page est ouverte dans claude.ai. Tu peux remplir la fiche à la main."}</span></div>
+     <div id="resume" class="alert info" hidden></div>
+   </div>
+   <div class="panel stack"><h2>Fiche</h2>${aptFormFields({source:"Yad2"})}
+     <div class="row"><button class="btn-primary" id="save">Enregistrer l'annonce</button><a class="btn" href="#annonces">Annuler</a></div>
+   </div></div>`;
+  let resume="",frais="";
+  $("#extract").onclick=async()=>{
+    const txt=$("#paste").value.trim();if(!txt){toast("Colle d'abord le texte de l'annonce");return}
+    const b=$("#extract");b.disabled=true;$("#extractMsg").textContent="Claude lit l'annonce…";
+    try{const d=await claudeExtract(txt);fillForm(m,d||{});resume=d.resume||"";frais=d.frais||"";
+      const urlIn=txt.match(/https:\/\/\S+/);if(urlIn&&!$("#f_url").value)$("#f_url").value=urlIn[0];
+      if(resume){$("#resume").hidden=false;$("#resume").textContent=resume+(frais?" · Frais : "+frais:"")}
+      $("#extractMsg").textContent="Fiche remplie. Vérifie les champs puis enregistre.";
+    }catch(e){$("#extractMsg").textContent=e&&e.code==="not_granted"?"Claude n'est pas autorisé pour cette page.":e&&e.code==="rate_limited"?"Trop de demandes, réessaie dans une minute.":"Analyse impossible ("+(e&&e.code||"erreur")+"). Remplis à la main."}
+    b.disabled=false;
+  };
+  $("#save").onclick=async()=>{
+    const d=readForm(m);if(!d.titre&&!d.rue&&!d.url){toast("Ajoute au moins un titre, une rue ou un lien");return}
+    const id=uid();const raw=$("#paste").value.trim();
+    const apt={...d,status:d.status||"repere",createdAt:nowISO(),updatedAt:nowISO(),resume,frais,annonceTexte:raw.slice(0,6000),checklist:{},history:[{t:nowISO(),a:"Ajouté"}]};
+    m.dataset.view="";location.hash="#annonces";await store.put("apts",id,apt);toast("Annonce enregistrée");openSheet(id);
+  };
+}
+
+/* ----- Sheet (detail) ----- */
+let sheetId=null;
+function openSheet(id){sheetId=id;const _a=state.apts.get(id);if(_a&&_a.auto&&!_a.seen)store.put("apts",id,{...stripId(_a),seen:true});renderSheet();const d=$("#sheet");if(!d.open){try{d.showModal()}catch(e){d.setAttribute("open","")}}}
+$("#sheet").addEventListener("close",()=>{sheetId=null});
+async function logEvent(id,text,patch){const a=state.apts.get(id);if(!a)return;const h=[...(a.history||[]),{t:nowISO(),a:text}].slice(-40);await store.put("apts",id,{...stripId(a),...(patch||{}),history:h,updatedAt:nowISO()})}
+function renderSheet(){
+  const a=state.apts.get(sheetId);const d=$("#sheet");if(!a){d.innerHTML="";return}
+  const s=score(a);const v=vars(a);const hasEmail=/\S+@\S+\.\S+/.test(a.contactEmail||"");
+  const url=safeUrl(a.url);const srcUrl=safeUrl(a.sourceUrl);
+  const srcName=/yad2/.test(srcUrl)?"Yad2":/facebook/.test(srcUrl)?"Facebook":/madlan/.test(srcUrl)?"Madlan":"l'annonce d'origine";
+  d.innerHTML=`<div class="sheet-head">
+     <div class="score ${scoreClass(s)}">${s}</div>
+     <div style="flex:1;min-width:0"><h2 style="overflow-wrap:anywhere">${esc(a.titre||a.rue||"Appartement")}</h2><div class="small muted">${esc([a.quartier,a.rue].filter(Boolean).join(" · "))}</div></div>
+     <button class="btn-ghost" id="closeSheet" aria-label="Fermer">✕</button>
+   </div>
+   <div class="sheet-body">
+     <div class="row">
+       <select id="st" style="width:auto" aria-label="Étape">${STATUSES.map(([k,l])=>`<option value="${k}" ${a.status===k?"selected":""}>${l}</option>`).join("")}</select>
+       ${url?`<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">Voir l'annonce ↗</a>`:""}
+       ${srcUrl&&srcUrl!==url?`<a class="btn" href="${esc(srcUrl)}" target="_blank" rel="noopener">Sur ${esc(srcName)} ↗</a>`:""}
+       ${(a.rue||a.rueHe)?`<a class="btn" href="${esc(mapsLink(a))}" target="_blank" rel="noopener">Carte ↗</a>`:""}
+       ${a.contactTel?`<span class="small muted">Tél. <span class="num" style="user-select:all">${esc(a.contactTel)}</span></span>`:""}
+     </div>
+     ${photoList(a).length?`<div class="gallery">${photoList(a).map(u=>`<img src="${esc(u)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`).join("")}</div>`:(a.photos&&a.photos.length&&url?`<div class="small muted">${a.photos.length} photo${a.photos.length>1?"s":""} sur l'annonce : <a href="${esc(url)}" target="_blank" rel="noopener">les voir ↗</a></div>`:"")}
+     <div class="row"><span class="price">${fmt(num(a.prix))}</span><span class="small muted">${num(a.arnona)||num(a.vaad)?`loyer + arnona + vaad = <b class="num">${fmt(totalCost(a))}</b> /mois`:`arnona et vaad non indiqués (compte ~250–600 ₪ en plus)`}${num(a.prix)?" · par personne ≈ <b class='num'>"+fmt(Math.round(totalCost(a)/2))+"</b>":""}</span></div>
+     <div class="small muted">${a.auto?"Trouvée par Claude · ":""}${a.publishedAt?"Publiée "+esc(relDay(a.publishedAt))+" · ":""}${a.createdAt?(a.auto?"trouvée ":"ajoutée ")+esc(relTime(a.createdAt)):""}</div>
+     ${a.resume?`<div class="alert info small">${esc(a.resume)}${a.frais?" · Frais : "+esc(a.frais):""}</div>`:""}
+
+     <section class="panel msgbox">
+       <div class="row between"><h3>Message</h3>
+         <div class="seg" role="group" aria-label="Langue">${["he","en","fr"].map(l=>`<button data-lang="${l}" aria-pressed="${(d.dataset.lang||"he")===l}">${{he:"עברית",en:"EN",fr:"FR"}[l]}</button>`).join("")}</div></div>
+       <div class="chips">${Object.entries(T).map(([k,t])=>`<button class="chip" data-kind="${k}" aria-pressed="${(d.dataset.kind||"premier")===k}">${esc(t.label)}</button>`).join("")}</div>
+       ${d.dataset.kind==="nego"?`<label>Offre ₪/mois<input id="offre" inputmode="numeric" value="${esc(a.offre||"")}"></label>`:""}
+       <textarea id="msg" dir="auto"></textarea>
+       <div class="row">
+         ${hasTel(a)?`<a class="btn btn-wa" id="sendWa" target="_blank" rel="noopener" href="#">Envoyer sur WhatsApp</a>`:""}
+         <button id="copyMsg">Copier</button>
+         ${sample?`<button id="aiMsg">✨ Version sur mesure (Claude)</button>`:""}
+         ${hasEmail&&mcp?`<button id="draftMail">Brouillon Gmail</button><button id="sendMail">Envoyer par Gmail</button>`:""}
+       </div>
+       <div id="mailConfirm"></div>
+       ${hasTel(a)?`<p class="small muted" style="margin:0">WhatsApp s'ouvre sur la conversation avec <span class="num">${esc(a.contactTel)}</span>, message déjà écrit : il reste à appuyer sur Envoyer.</p>`:
+       `<div class="notel stack" style="gap:8px"><p class="small" style="margin:0"><b>Pas de numéro dans la fiche</b> : le site d'annonces le cache. ${srcUrl||url?`Ouvre ${srcUrl?esc(srcName):"l'annonce"}, appuie sur « הצג מספר / afficher le numéro », copie-le et colle-le ici :`:`Ajoute le numéro du contact :`}</p>
+         <div class="row">${srcUrl||url?`<a class="btn" href="${esc(srcUrl||url)}" target="_blank" rel="noopener">Voir le numéro sur ${esc(srcUrl?srcName:"l'annonce")} ↗</a>`:""}<input id="telQuick" type="tel" inputmode="tel" placeholder="05X-XXXXXXX" style="flex:1;min-width:140px"><button class="btn-primary" id="telSave">OK</button></div>
+         <a class="small" id="waNoNum" target="_blank" rel="noopener" href="#">Ou ouvrir WhatsApp et choisir le contact moi-même ↗</a></div>`}
+     </section>
+
+     <details class="panel"><summary><b>Fiche complète</b> (modifier)</summary><div style="margin-top:12px" class="stack">${aptFormFields(a)}<div class="row"><button class="btn-primary" id="saveEdit">Enregistrer</button><button class="btn-danger" id="del">Supprimer</button><span id="delConfirm"></span></div></div></details>
+
+     <details class="panel" ${["visite_prevue","visite"].includes(a.status)?"open":""}><summary><b>Checklist de visite</b> <span class="num small muted">${Object.values(a.checklist||{}).filter(Boolean).length}/${VISIT_CHECK.length}</span></summary>
+       <div class="stack" style="margin-top:10px">${VISIT_CHECK.map(([k,l])=>`<label class="check"><input type="checkbox" data-ck="${k}" ${(a.checklist||{})[k]?"checked":""}>${esc(l)}</label>`).join("")}</div></details>
+
+     ${a.annonceTexte?`<details class="panel"><summary><b>Texte original de l'annonce</b></summary><p dir="auto" style="white-space:pre-wrap;margin:10px 0 0">${esc(a.annonceTexte)}</p></details>`:""}
+     <div class="panel timeline"><h3 style="margin-bottom:6px;color:var(--ink)">Historique</h3>${(a.history||[]).slice().reverse().map(h=>`<div><span class="num">${esc(fmtDT(h.t))}</span><span>${esc(h.a)}</span></div>`).join("")||"—"}</div>
+   </div>`;
+  const lang=()=>d.dataset.lang||"he",kind=()=>d.dataset.kind||"premier";
+  const msg=$("#msg",d);
+  const refill=()=>{const vv=vars({...a,offre:($("#offre",d)||{}).value||a.offre});msg.value=T[kind()][lang()](vv);syncWa()};
+  const syncWa=()=>{if($("#sendWa",d))$("#sendWa",d).href=waLink(a.contactTel,msg.value);if($("#waNoNum",d))$("#waNoNum",d).href="https://api.whatsapp.com/send?text="+encodeURIComponent(msg.value)};
+  refill();
+  msg.oninput=syncWa;
+  if($("#offre",d))$("#offre",d).oninput=refill;
+  $("#closeSheet",d).onclick=()=>d.close();
+  d.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>{d.dataset.lang=b.dataset.lang;renderSheet()});
+  d.querySelectorAll("[data-kind]").forEach(b=>b.onclick=()=>{d.dataset.kind=b.dataset.kind;renderSheet()});
+  $("#copyMsg",d).onclick=()=>copy(msg.value);
+  if($("#telSave",d))$("#telSave",d).onclick=async()=>{const t=$("#telQuick",d).value.trim();if(waNumber(t).length<11){toast("Numéro invalide : format 05X-XXXXXXX");return}
+    await store.put("apts",a.id,{...stripId(a),contactTel:t,updatedAt:nowISO()});toast("Numéro enregistré");renderSheet()};
+  if($("#sendWa",d))$("#sendWa",d).addEventListener("click",()=>{
+    const patch=a.status==="repere"&&kind()==="premier"?{status:"contacte",contactedAt:nowISO()}:{};
+    setTimeout(()=>logEvent(a.id,"WhatsApp ouvert : "+T[kind()].label,patch),300);
+    if(patch.status)toast("Passé en « Contacté ». Reviens changer l'étape s'il ne l'a pas été.");
+  });
+  if($("#aiMsg",d))$("#aiMsg",d).onclick=async e=>{const b=e.currentTarget;b.disabled=true;b.textContent="Claude écrit…";
+    try{msg.value=await claudeMessage(a,kind(),lang(),t=>{msg.value=t});syncWa()}catch(err){toast(err&&err.code==="not_granted"?"Claude n'est pas autorisé pour cette page":"Rédaction impossible ("+(err&&err.code||"erreur")+")")}
+    b.disabled=false;b.textContent="✨ Version sur mesure (Claude)"};
+  const subj=()=>({he:"דירה",en:"Apartment",fr:"Appartement"}[lang()])+" "+(a.rue||a.titre||"")+" – "+(state.profile.signature||"");
+  if($("#draftMail",d))$("#draftMail",d).onclick=async e=>{const b=e.currentTarget;b.disabled=true;
+    try{await gmail("create_draft",a.contactEmail,subj(),msg.value);toast("Brouillon créé dans Gmail");logEvent(a.id,"Brouillon Gmail créé")}catch(err){toast(mcpErrText(err))}b.disabled=false};
+  if($("#sendMail",d))$("#sendMail",d).onclick=()=>{
+    const c=$("#mailConfirm",d);c.innerHTML=`<div class="confirm"><span>Envoyer ce message à <b>${esc(a.contactEmail)}</b> depuis ton Gmail ?</span><button class="btn-primary" id="mailYes">Oui, envoyer</button><button id="mailNo">Annuler</button></div>`;
+    $("#mailNo",c).onclick=()=>c.innerHTML="";
+    $("#mailYes",c).onclick=async e=>{e.currentTarget.disabled=true;
+      try{await gmail("send_message",a.contactEmail,subj(),msg.value);c.innerHTML="";toast("Email envoyé");
+        logEvent(a.id,"Email envoyé : "+T[kind()].label,a.status==="repere"?{status:"contacte",contactedAt:nowISO()}:{})}
+      catch(err){c.innerHTML=`<div class="confirm">${esc(mcpErrText(err))}</div>`}};
+  };
+  $("#st",d).onchange=e=>{const st=e.target.value;const patch={status:st};if(st==="contacte"&&!a.contactedAt)patch.contactedAt=nowISO();logEvent(a.id,"Étape : "+STATUS_LABEL[st],patch)};
+  $("#saveEdit",d).onclick=async()=>{const f=readForm(d);await store.put("apts",a.id,{...stripId(a),...f,updatedAt:nowISO()});toast("Fiche enregistrée")};
+  $("#del",d).onclick=()=>{const c=$("#delConfirm",d);c.innerHTML=`<span class="confirm">Supprimer définitivement ? <button class="btn-danger" id="delYes">Oui</button></span>`;$("#delYes",c).onclick=async()=>{d.close();await store.del("apts",a.id);toast("Supprimé")}};
+  d.querySelectorAll("[data-ck]").forEach(cb=>cb.onchange=async()=>{const ck={...(a.checklist||{}),[cb.dataset.ck]:cb.checked};await store.put("apts",a.id,{...stripId(a),checklist:ck,updatedAt:nowISO()})});
+}
+// re-render the open sheet when data changes, without destroying a message being edited
+const _render=render;
+render=function(){_render();if(sheetId&&$("#sheet").open){const ae=document.activeElement;if(ae&&$("#sheet").contains(ae)&&/TEXTAREA|INPUT|SELECT/.test(ae.tagName))return;renderSheet()}};
+
+/* ----- Agences ----- */
+const AG_STATUS=[["a_contacter","À contacter"],["contacte","Contacté"],["actif","Nous envoie des biens"],["inutile","Pas utile"]];
+function viewAgences(m){
+  const ags=[...state.agencies.values()].sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  const lang=m.dataset.aglang||"he";const v=vars(null);
+  m.innerHTML=`<div class="stack">
+   <div class="panel stack">
+     <div class="row between"><h2>Message de recherche pour les agences</h2>
+       <div class="seg" role="group" aria-label="Langue">${["he","en","fr"].map(l=>`<button data-aglang="${l}" aria-pressed="${lang===l}">${{he:"עברית",en:"EN",fr:"FR"}[l]}</button>`).join("")}</div></div>
+     <p class="small muted" style="margin:0">Envoie ce message à chaque agence : elles cherchent pour vous et vous écrivent dès qu'un bien sort. Le budget, le téléphone et la signature viennent de ton Profil.</p>
+     <textarea id="agmsg" dir="auto" style="min-height:180px">${esc(AGENCY_T[lang](v))}</textarea>
+     <div class="row"><button id="agcopy">Copier</button></div>
+   </div>
+   <div class="row between"><h2>Agences et agents <span class="num muted">${ags.length}</span></h2><button id="agadd">+ Ajouter une agence</button></div>
+   <div id="agform" hidden class="panel"><div class="fields"><label>Nom<input id="ag_name"></label><label>Téléphone / WhatsApp<input id="ag_tel" type="tel"></label><label>Email<input id="ag_email" type="email"></label><label>Site<input id="ag_site" type="url" placeholder="https://"></label><label class="wide">Notes<input id="ag_notes"></label></div><div class="row" style="margin-top:10px"><button class="btn-primary" id="agsave">Enregistrer</button></div></div>
+   ${ags.length?`<div class="cards">${ags.map(g=>{const site=safeUrl(g.site);const hasEmail=/\S+@\S+\.\S+/.test(g.email||"");return `<div class="panel stack" style="gap:8px">
+      <div class="row between"><h3>${esc(g.name)}</h3><select data-agst="${esc(g.id)}" style="width:auto">${AG_STATUS.map(([k,l])=>`<option value="${k}" ${(g.status||"a_contacter")===k?"selected":""}>${l}</option>`).join("")}</select></div>
+      ${g.notes?`<div class="small muted">${esc(g.notes)}</div>`:""}
+      <div class="small">${g.tel?`<span class="num" style="user-select:all">${esc(g.tel)}</span>`:""}${g.email?` · <span style="user-select:all">${esc(g.email)}</span>`:""}</div>
+      <div class="row">${g.tel?`<a class="btn btn-wa" target="_blank" rel="noopener" data-agwa="${esc(g.id)}" href="#">WhatsApp</a>`:""}${site?`<a class="btn" href="${esc(site)}" target="_blank" rel="noopener">Site ↗</a>`:""}${hasEmail&&mcp?`<button data-agdraft="${esc(g.id)}">Brouillon Gmail</button>`:""}<button class="btn-ghost" data-agdel="${esc(g.id)}">Supprimer</button></div>
+     </div>`}).join("")}</div>`:`<div class="empty">Aucune agence pour l'instant. Ajoute celles que tu connais avec « + Ajouter une agence ».</div>`}
+  </div>`;
+  const ta=$("#agmsg");
+  m.querySelectorAll("[data-aglang]").forEach(b=>b.onclick=()=>{m.dataset.aglang=b.dataset.aglang;viewAgences(m)});
+  $("#agcopy").onclick=()=>copy(ta.value);
+  $("#agadd").onclick=()=>{$("#agform").hidden=!$("#agform").hidden};
+  $("#agsave").onclick=async()=>{const g={name:$("#ag_name").value.trim(),tel:$("#ag_tel").value.trim(),email:$("#ag_email").value.trim(),site:$("#ag_site").value.trim(),notes:$("#ag_notes").value.trim(),status:"a_contacter"};if(!g.name){toast("Donne un nom");return}await store.put("agencies",uid(),g);toast("Agence ajoutée")};
+  m.querySelectorAll("[data-agwa]").forEach(a=>{const g=state.agencies.get(a.dataset.agwa);a.href=waLink(g.tel,ta.value);a.addEventListener("mousedown",()=>a.href=waLink(g.tel,ta.value));a.addEventListener("click",()=>{if((g.status||"a_contacter")==="a_contacter")store.put("agencies",g.id,{...stripId(g),status:"contacte",contactedAt:nowISO()})})});
+  m.querySelectorAll("[data-agst]").forEach(s=>s.onchange=()=>{const g=state.agencies.get(s.dataset.agst);store.put("agencies",g.id,{...stripId(g),status:s.value})});
+  m.querySelectorAll("[data-agdel]").forEach(b=>b.onclick=()=>{if(b.dataset.armed){store.del("agencies",b.dataset.agdel)}else{b.dataset.armed="1";b.textContent="Confirmer ?"}});
+  m.querySelectorAll("[data-agdraft]").forEach(b=>b.onclick=async()=>{const g=state.agencies.get(b.dataset.agdraft);b.disabled=true;
+    try{await gmail("create_draft",g.email,{he:"מחפשים דירת 3 חדרים בתל אביב",en:"Looking for a 3-room apartment in Tel Aviv",fr:"Recherche 3 pièces à Tel Aviv"}[lang],ta.value);toast("Brouillon créé dans Gmail")}catch(e){toast(mcpErrText(e))}b.disabled=false});
+}
+
+/* ----- Dossier ----- */
+function viewDossier(m){
+  const all=DOSSIER.flatMap(([,items])=>items);const done=all.filter(([k])=>state.dossier[k]).length;
+  m.innerHTML=`<div class="stack">
+   <div class="panel"><div class="row between"><h2>Dossier locataire</h2><span class="num">${done}/${all.length}</span></div>
+     <p class="small muted" style="margin:6px 0 0">À Tel Aviv, les bons apparts partent en 24 à 48 h. Le premier qui a un dossier complet et des chèques en main gagne. Coche au fur et à mesure (partagé avec ta cousine).</p></div>
+   <div class="grid2">${DOSSIER.map(([title,items])=>`<div class="panel stack" style="gap:8px"><h3>${esc(title)}</h3>${items.map(([k,l])=>`<label class="check"><input type="checkbox" data-dos="${k}" ${state.dossier[k]?"checked":""}>${esc(l)}</label>`).join("")}</div>`).join("")}</div>
+  </div>`;
+  m.querySelectorAll("[data-dos]").forEach(cb=>cb.onchange=()=>{state.dossier={...state.dossier,[cb.dataset.dos]:cb.checked};store.putDoc("settings/dossier",{checked:state.dossier});render()});
+}
+
+/* ----- Où chercher ----- */
+
+function viewChercher(m){
+  m.innerHTML=`<div class="stack">
+   <div class="panel"><h2>Routine quotidienne</h2>
+    <ol style="margin:8px 0 0;padding-inline-start:20px">
+     <li><b>Matin et soir</b> : ouvre chaque lien ci-dessous (ils sont déjà filtrés), trié par « plus récent ».</li>
+     <li>Pour chaque annonce intéressante : copie le texte puis <a href="#ajouter">+ Ajouter</a>. Claude remplit la fiche.</li>
+     <li>Envoie le WhatsApp <b>dans l'heure</b>. Les propriétaires répondent aux premiers.</li>
+     <li>Relance après environ 20 h sans réponse (l'onglet Annonces te les montre).</li>
+     <li>Active les <b>alertes</b> sur Yad2 et Madlan et rejoins les groupes Facebook.</li>
+    </ol></div>
+   <div class="grid2" id="srcs"></div>
+  </div>`;
+  const box=$("#srcs");
+  const groups={};(window.__SEARCH_LINKS||[]).forEach(l=>{(groups[l.group]=groups[l.group]||[]).push(l)});
+  box.innerHTML=Object.entries(groups).map(([g,ls])=>`<div class="panel src"><h3>${esc(g)}</h3><div class="list">${ls.map(l=>{const u=safeUrl(l.url);return `<div>${u?`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(l.name)} ↗</a>`:`<b>${esc(l.name)}</b>`}${l.note?`<div class="small muted">${esc(l.note)}</div>`:""}</div>`}).join("")}</div></div>`).join("")||`<div class="empty">Liens en cours de préparation.</div>`;
+}
+
+/* ----- Conseils ----- */
+function viewConseils(m){
+  const tips=window.__TIPS||[];
+  m.innerHTML=`<div class="stack">${tips.map(([t,items])=>`<div class="panel"><h2>${esc(t)}</h2><ul style="margin:8px 0 0;padding-inline-start:20px">${items.map(i=>`<li style="margin-bottom:4px">${i}</li>`).join("")}</ul></div>`).join("")}</div>`;
+}
+
+/* ----- Profil ----- */
+function viewProfil(m){
+  const p=state.profile;
+  m.innerHTML=`<div class="stack"><div class="panel stack">
+   <h2>Profil (utilisé dans tous les messages)</h2>
+   <div class="fields">
+    <label>Signature<input id="p_signature" value="${esc(p.signature)}"></label>
+    <label>Ton tél. israélien<input id="p_tel" type="tel" value="${esc(p.tel)}" placeholder="05X-XXXXXXX"></label>
+    <label>Budget max ₪<input id="p_budget" inputmode="numeric" value="${esc(p.budget)}"></label>
+    <label>Budget idéal ₪<input id="p_budgetCible" inputmode="numeric" value="${esc(p.budgetCible)}"></label>
+    <label>Loyer minimum ₪<input id="p_prixMin" inputmode="numeric" value="${esc(p.prixMin)}"></label>
+    <label class="wide">Métier (FR/EN)<input id="p_emploi" value="${esc(p.emploi)}"></label>
+    <label class="wide">Métier (hébreu)<input id="p_emploiHe" dir="rtl" value="${esc(p.emploiHe)}"></label>
+    <label class="wide">Disponibilités (FR/EN)<input id="p_dispos" value="${esc(p.dispos)}"></label>
+    <label class="wide">Disponibilités (hébreu)<input id="p_disposHe" dir="rtl" value="${esc(p.disposHe)}"></label>
+   </div>
+   <div class="row"><button class="btn-primary" id="psave">Enregistrer</button></div>
+   <p class="small muted" style="margin:0">Règle : les annonces sous le loyer minimum sont masquées (sauf si tu les as déjà traitées). Le score (0-100) favorise : loyer sous le budget idéal, mamad, ascenseur si étage ≥ 3, balcon, clim, quartiers centraux, et ta note après visite.</p>
+  </div></div>`;
+  $("#psave").onclick=async()=>{const np={...state.profile};["signature","tel","budget","budgetCible","prixMin","emploi","emploiHe","dispos","disposHe"].forEach(k=>np[k]=$("#p_"+k).value.trim());np.budget=num(np.budget)||11000;np.prixMin=num(np.prixMin)||8100;np.budgetCible=num(np.budgetCible)||9500;state.profile=np;await store.putDoc("settings/profile",np);lsSave();toast("Profil enregistré");m.dataset.view="";render()};
+}
+
+boot();
+</script>
+<script>
+/* ---------- content: search links & tips (research of 24 Nov 2026) ---------- */
+const FB=id=>"https://www.facebook.com/groups/"+id;
+window.__SEARCH_LINKS=[
+ {group:"Sites d'annonces (à ouvrir matin et soir)",name:"Yad2 – Tel Aviv, 3 pièces, 7 000–11 000 ₪",url:"https://www.yad2.co.il/realestate/rent?topArea=2&city=5000&minRooms=3&maxRooms=3&minPrice=7000&maxPrice=11000",note:"Le plus gros site. Si le filtre de prix ne s'applique pas, règle-le à la main, puis « שמירת חיפוש » pour recevoir les alertes (compte gratuit)."},
+ {group:"Sites d'annonces (à ouvrir matin et soir)",name:"Madlan – Tel Aviv, 3 pièces",url:"https://www.madlan.co.il/for-rent/%D7%AA%D7%9C-%D7%90%D7%91%D7%99%D7%91-%D7%99%D7%A4%D7%95-%D7%99%D7%A9%D7%A8%D7%90%D7%9C/3-bd",note:"Mets le prix dans les filtres et enregistre la recherche. Il y a aussi un filtre mamad."},
+ {group:"Sites d'annonces (à ouvrir matin et soir)",name:"Madlan – avec mamad",url:"https://www.madlan.co.il/for-rent/%D7%AA%D7%9C-%D7%90%D7%91%D7%99%D7%91-%D7%99%D7%A4%D7%95-%D7%99%D7%A9%D7%A8%D7%90%D7%9C/secure-room"},
+ {group:"Sites d'annonces (à ouvrir matin et soir)",name:"Homeless",url:"https://www.homeless.co.il/rent/",note:"Beaucoup de particuliers."},
+ {group:"Sites d'annonces (à ouvrir matin et soir)",name:"OnMap (en anglais)",url:"https://www.onmap.co.il/en"},
+ {group:"Sites d'annonces (à ouvrir matin et soir)",name:"WinWin",url:"https://www.winwin.co.il/"},
+ {group:"Sites d'annonces (à ouvrir matin et soir)",name:"Komo",url:"https://www.komo.co.il/"},
+ {group:"Sites d'annonces (à ouvrir matin et soir)",name:"Le Petit Journal Tel Aviv – annonces (FR)",url:"https://lepetitjournal.com/tel-aviv/annonces"},
+ {group:"Groupes Facebook (rejoins-les tous)",name:"Secret Tel Aviv",url:FB("secrettelaviv"),note:"Anglophone, énorme."},
+ {group:"Groupes Facebook (rejoins-les tous)",name:"Tel Aviv Apartments",url:FB("TLVAPT")},
+ {group:"Groupes Facebook (rejoins-les tous)",name:"Looking for an Apartment in Tel Aviv",url:FB("TelAvivApartments")},
+ {group:"Groupes Facebook (rejoins-les tous)",name:"TLV Rentals English – No Agents",url:FB("1432828703704444")},
+ {group:"Groupes Facebook (rejoins-les tous)",name:"Apartments in TLV – Old North & Downtown",url:FB("RealEstateTelAviv")},
+ {group:"Groupes Facebook (rejoins-les tous)",name:"דירות להשכרה לב תל אביב צפון ישן",url:FB("287564448778602")},
+ {group:"Groupes Facebook (rejoins-les tous)",name:"דירות להשכרה במרכז תל אביב",url:FB("174312609376409")},
+ {group:"Groupes Facebook (rejoins-les tous)",name:"דירות מפה לאוזן בתל אביב",url:FB("101875683484689"),note:"Bouche à oreille : souvent les meilleures affaires."},
+ {group:"Groupes Facebook (rejoins-les tous)",name:"דירות בתל אביב ללא תיווך",url:FB("1110501595666914"),note:"Sans agence = pas de frais."},
+ {group:"Groupes Facebook (rejoins-les tous)",name:"דירות להשכרה בפלורנטין",url:FB("296346570481003")},
+ {group:"Groupes Facebook (rejoins-les tous)",name:"דירות בפלורנטין ללא תיווך",url:FB("1529488140613580")},
+ {group:"Groupes Facebook (rejoins-les tous)",name:"דירות שוות לזוגות ושותפים",url:FB("429827780505313"),note:"Pour colocs, ça correspond à vous deux."},
+ {group:"Aide gratuite pour olim",name:"Mairie de Tel Aviv – Département olim (coordinatrices francophones + groupe WhatsApp FR)",url:"https://www.tel-aviv.gov.il/en/Live/NewResidents/Pages/OlimResidentDepartment.aspx",note:"Balfour 14 · olim@tel-aviv.gov.il. Demande à rejoindre le groupe WhatsApp des olim francophones."},
+ {group:"Aide gratuite pour olim",name:"Conseil logement + juridique gratuit (Young Adult Center, Mazeh 9)",url:"https://www.tel-aviv.gov.il/en/Live/NewResidents/Pages/Housing.aspx",note:"Fais relire ton bail ici."},
+ {group:"Aide gratuite pour olim",name:"Réduction d'arnona olim – Tel Aviv",url:"https://www.tel-aviv.gov.il/en/Live/ArnonaAndCityTaxes/Pages/default.aspx",note:"Ibn Gvirol 69 ou formulaire en ligne, *3013."},
+ {group:"Aide gratuite pour olim",name:"Vérifier un immeuble / propriétaire : Citip",url:"https://www.citip.co.il/"},
+];
+window.__TIPS=[
+ ["Le marché, en vrai (fin 2026)",[
+  "Loyer moyen d'un 3 pièces à Tel Aviv : environ <b>7 000 ₪</b> (données officielles CBS, T3 2025). Le prix <b>demandé</b> sur Yad2 et Madlan tourne autour de <b>8 500 ₪</b>. Avec 7 000 à 11 000 ₪, tu es dans le marché.",
+  "Vieux Nord : 6 000–9 000 ₪ sans mamad, jusqu'à ~10 000 ₪ avec mamad. Florentin rénové : 7 500–11 000 ₪. Lev Ha'ir et Rothschild en Bauhaus rénové : 12 000–18 000 ₪, hors budget. Neve Tzedek : généralement hors budget.",
+  "Un <b>mamad</b> ajoute environ 10 % au loyer. Les apparts sans mamad ni abri ont baissé de 5 à 10 % depuis 2023 : c'est là qu'on négocie.",
+  "Un projet TAMA 38 ou « pinui binui » (démolition-reconstruction) juste à côté peut faire baisser le loyer jusqu'à 2 000 ₪, mais attention au bruit du chantier.",
+ ]],
+ ["Coût réel par mois",[
+  "<b>Arnona</b> (taxe d'habitation) : pour 70 m², environ 380 à 680 ₪/mois avant réduction. Les olim ont droit jusqu'à <b>90 % de réduction</b> sur 100 m², pendant 12 mois à choisir dans les 24 premiers mois. Ce n'est pas rétroactif : il faut faire la demande dès le jour de l'entrée.",
+  "La réduction d'arnona est calculée au prorata de chaque olé : mettez <b>vos deux noms</b> sur le bail et sur le compte d'arnona.",
+  "<b>Vaad bayit</b> (charges de copropriété) : environ 450 ₪/mois dans un immeuble récent avec ascenseur, beaucoup moins dans un vieil immeuble sans ascenseur. Deux à trois fois plus dans une tour.",
+  "<b>Aide au loyer</b> : versée automatiquement par l'État à partir du 7e mois après l'alyah, jusqu'à environ 30 mois. Chacun de vous y a droit séparément (environ 1 600 ₪/mois par personne seule selon Kol Zchut : à vérifier au Misrad HaKlita). D'où l'intérêt d'être tous les deux sur le bail.",
+  "Sal klita : environ 21 700 ₪ pour une personne seule en 2026, versés en 6 fois sur un compte israélien.",
+ ]],
+ ["Frais d'agence (dmei tivuch)",[
+  "Les frais sont payés par <b>celui qui a engagé l'agent</b>. Si c'est le propriétaire qui l'a mandaté, c'est lui qui paie.",
+  "Tu ne paies que si <b>tu signes un contrat de courtage</b> (הזמנת שירותי תיווך). Les agents le tendent souvent à la visite : lis-le, et ne signe que si tu acceptes de payer, en général 1 mois de loyer + 18 % de TVA.",
+  "Depuis mars 2025, l'agent doit te donner des infos écrites sur le bien et ne peut pas encaisser à l'avance sans contrat.",
+  "Les groupes « ללא תיווך » (sans agence) évitent ces frais.",
+ ]],
+ ["Garanties : ce que la loi permet",[
+  "Loi sur la location équitable (2017) : les garanties sont plafonnées au <b>plus bas entre 3 mois de loyer et 1/3 du loyer total du bail</b>. Le dépôt doit être rendu dans les 60 jours après la fin du bail.",
+  "Le propriétaire doit réparer sous <b>30 jours</b> (sous 3 jours si c'est urgent).",
+  "Ce qu'on te demandera : des chèques de loyer post-datés, un chèque de garantie, un dépôt, une garantie bancaire (ערבות בנקאית) et/ou un shtar hov (שטר חוב) signé par des garants.",
+  "<b>Sans garants israéliens</b> : propose une garantie bancaire, ou de payer 3 à 6 mois d'avance, ou une société de garantie payante, ou une assurance loyer impayé. Montre aussi tes fiches de paie et relevés français, avec une lettre de l'employeur.",
+  "Sur le chèque de garantie, écris « לא להפקדה ללא הודעה מראש בכתב » (ne pas encaisser sans préavis écrit).",
+  "Ouvre ton compte bancaire israélien <b>maintenant</b> : sans chéquier, impossible de signer.",
+ ]],
+ ["Le bail",[
+  "Standard : 12 mois avec option de prolongation. Négocie une <b>clause de sortie anticipée</b> avec 60 à 90 jours de préavis.",
+  "Demande le bail à l'avance et fais-le relire gratuitement au Young Adult Center (Mazeh 9).",
+  "Le jour de l'entrée : vidéo de chaque pièce, relevés des compteurs (eau, électricité, gaz), et liste écrite des appareils inclus. Par défaut, le bail ne couvre que les murs.",
+ ]],
+ ["Stratégie pour aller vite",[
+  "<b>Vitesse &gt; perfection</b> : WhatsApp dans l'heure, visite le jour même, décision sur place si l'appart a 70 de score ou plus.",
+  "Allez aux visites <b>à deux</b>, avec les copies des documents et le chéquier. Le propriétaire choisit souvent le premier dossier complet.",
+  "Les particuliers sont plus souples que les agences sur les garanties : priorité aux groupes Facebook « ללא תיווך » et « מפה לאוזן ».",
+  "Pendant la recherche, une sous-location ou un Airbnb d'un mois vous laisse le temps de ne pas signer n'importe quoi.",
+  "Abri : installe l'appli du Pikud HaOref et regarde la carte des abris publics de la mairie pour chaque adresse.",
+ ]],
+ ["Phrases utiles (hébreu)",[
+  "<span class='he-text'>היא עדיין פנויה?</span> : il est encore libre ?",
+  "<span class='he-text'>מתי אפשר לבוא לראות את הדירה?</span> : quand peut-on venir visiter ?",
+  "<span class='he-text'>כמה ארנונה וכמה ועד בית?</span> : combien d'arnona et de vaad bayit ?",
+  "<span class='he-text'>יש ממ״ד? אם לא, איפה המקלט הקרוב?</span> : il y a un mamad ? Sinon, où est l'abri le plus proche ?",
+  "<span class='he-text'>יש בעיות רטיבות?</span> : il y a des problèmes d'humidité ?",
+  "<span class='he-text'>אנחנו יכולים להציע ערבות בנקאית במקום ערבים.</span> : nous pouvons proposer une garantie bancaire à la place de garants.",
+  "<span class='he-text'>זה דרך מתווך? מי משלם דמי תיווך?</span> : c'est via une agence ? Qui paie les frais ?",
+  "<span class='he-text'>אפשר לקבל את החוזה מראש כדי שעורך דין יעבור עליו?</span> : on peut avoir le bail à l'avance pour le faire relire par un avocat ?",
+ ]],
+];
+</script>
+
+</body>
+</html>

@@ -108,6 +108,10 @@ dialog::backdrop{background:rgba(10,15,25,.55)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:10px;font-size:.9rem;z-index:50;max-width:calc(100vw - 32px)}
 .confirm{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--warn-soft);padding:8px 10px;border-radius:8px;font-size:.88rem}
 .src a{color:var(--accent);font-weight:500}
+.thumb{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;background:var(--surface-2);display:block}
+.gallery{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px}
+.gallery img{flex:none;width:min(82%,420px);aspect-ratio:4/3;object-fit:cover;border-radius:10px;scroll-snap-align:start;background:var(--surface-2)}
+.notel{background:var(--surface-2);border-radius:8px;padding:10px}
 .he-text{direction:rtl;text-align:right;font-size:1rem}
 .timeline{font-size:.83rem;color:var(--muted)}
 .timeline div{display:flex;gap:8px}
@@ -179,7 +183,7 @@ const DOSSIER=[
 ];
 const DEFAULT_PROFILE={
   noms:"Dov et ma cousine", nomsHe:"דב ובת הדודה שלו", signature:"Dov", tel:"", email:"",
-  dispos:"tous les jours, dès que possible", disposHe:"בכל יום, מתי שנוח לך", budget:11000, budgetCible:9500,
+  dispos:"tous les jours, dès que possible", disposHe:"בכל יום, מתי שנוח לך", budget:11000, budgetCible:9500, prixMin:8100,
   emploi:"ingénieur biomédical / développeur, et ma cousine travaille aussi", emploiHe:"מהנדס ביו-רפואי ומפתח תוכנה, ובת הדודה שלי עובדת גם",
 };
 
@@ -200,18 +204,20 @@ function relDay(d){if(!d)return"";const t=new Date(d);if(isNaN(t))return String(
 function fmtDT(iso){if(!iso)return"";const d=new Date(iso);if(isNaN(d))return iso;return d.toLocaleString("fr-FR",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
 
 /* ---------- store (db capability, localStorage fallback) ---------- */
-const state={apts:new Map(),agencies:new Map(),profile:{...DEFAULT_PROFILE},dossier:{},mode:"loading",filter:"actifs",sort:"score",q:""};
+const state={apts:new Map(),agencies:new Map(),profile:{...DEFAULT_PROFILE},dossier:{},mode:"loading",filter:"actifs",sort:"score",q:"",showAll:false,touched:new Set(),deleted:new Set(),listingsAt:""};
 let db=null, mcp=null, sample=null;
 const LS="dira-tlv-v1";
 function lsLoad(){try{return JSON.parse(localStorage.getItem(LS)||"{}")}catch(e){return{}}}
-function lsSave(){if(state.mode!=="local")return;try{localStorage.setItem(LS,JSON.stringify({apts:[...state.apts.values()],agencies:[...state.agencies.values()],profile:state.profile,dossier:state.dossier}))}catch(e){}}
+function lsSave(){if(state.mode!=="local"&&state.mode!=="static")return;
+  const keep=a=>state.mode==="local"||state.touched.has(a.id);
+  try{localStorage.setItem(LS,JSON.stringify({apts:[...state.apts.values()].filter(keep),agencies:[...state.agencies.values()].filter(keep),profile:state.profile,dossier:state.dossier,deleted:[...state.deleted]}))}catch(e){}}
 const store={
   async put(col,id,data){
-    const map=col==="apts"?state.apts:state.agencies; map.set(id,{...data,id});
+    const map=col==="apts"?state.apts:state.agencies; map.set(id,{...data,id}); state.touched.add(id);
     if(db){try{await db.collection(col).doc(id).set(stripId(data))}catch(e){writeErr(e)}}else lsSave();
     render();
   },
-  async del(col,id){const map=col==="apts"?state.apts:state.agencies;map.delete(id);
+  async del(col,id){const map=col==="apts"?state.apts:state.agencies;map.delete(id);state.deleted.add(id);state.touched.delete(id);
     if(db){try{await db.collection(col).doc(id).delete()}catch(e){writeErr(e)}}else lsSave(); render()},
   async putDoc(path,data){ if(db){try{await db.doc(path).set(data)}catch(e){writeErr(e)}}else lsSave() }
 };
@@ -225,7 +231,9 @@ async function boot(){
   const tryUse=n=>c&&c.use?c.use(n).catch(()=>null):Promise.resolve(null);
   const [d,m,s]=await Promise.all([tryUse("db"),tryUse("mcp"),tryUse("sample")]);
   mcp=m; sample=s;
-  if(!d){startLocal();return}
+  if(!d){let base=null;
+    if(!c&&/^https?:$/.test(location.protocol)){try{const r=await fetch("data/listings.json",{cache:"no-store"});if(r.ok)base=await r.json()}catch(e){}}
+    startLocal(base);return}
   db=d; state.mode="db"; setSync("warn","Chargement…");
   const timer=setTimeout(()=>setSync("warn","Données injoignables pour l'instant"),10000);
   let first=0;const done=()=>{if(++first>=2){clearTimeout(timer);setSync("ok","Partagé · synchro")}};
@@ -234,17 +242,25 @@ async function boot(){
   db.doc("settings/profile").onSnapshot(s=>{if(s.exists)state.profile={...DEFAULT_PROFILE,...s.data()};render()},()=>{});
   db.doc("settings/dossier").onSnapshot(s=>{if(s.exists)state.dossier={...(s.data().checked||{})};render()},()=>{});
 }
-function startLocal(){
-  state.mode="local";const l=lsLoad();
-  (l.apts||[]).forEach(a=>state.apts.set(a.id,a));(l.agencies||[]).forEach(a=>state.agencies.set(a.id,a));
+function startLocal(base){
+  state.mode=base?"static":"local";const l=lsLoad();
+  (l.deleted||[]).forEach(id=>state.deleted.add(id));
+  if(base){(base.apts||[]).forEach(a=>{if(a&&a.id&&!state.deleted.has(a.id))state.apts.set(a.id,a)});(base.agencies||[]).forEach(a=>{if(a&&a.id&&!state.deleted.has(a.id))state.agencies.set(a.id,a)});state.listingsAt=base.updatedAt||""}
+  (l.apts||[]).forEach(a=>{state.apts.set(a.id,a);state.touched.add(a.id)});(l.agencies||[]).forEach(a=>{state.agencies.set(a.id,a);state.touched.add(a.id)});
   if(l.profile)state.profile={...DEFAULT_PROFILE,...l.profile};if(l.dossier)state.dossier=l.dossier;
-  setSync("warn","Local");render();
+  if(base){setSync("ok","Annonces "+(state.listingsAt?relTime(state.listingsAt):"à jour"));setupPWA()}else setSync("warn","Local");
+  render();
+}
+function setupPWA(){
+  try{if(!document.querySelector('link[rel="manifest"]')){const l=document.createElement("link");l.rel="manifest";l.href="manifest.json";document.head.appendChild(l)}
+    if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}
 }
 
 /* ---------- scoring ---------- */
 function totalCost(a){return num(a.prix)+num(a.arnona)+num(a.vaad)}
 function score(a){
   const p=state.profile;let s=50;const prix=num(a.prix);
+  if(prix&&prix<prixMin())s-=35;
   if(prix){const cible=num(p.budgetCible)||9500,max=num(p.budget)||11000;
     if(prix<=cible-1000)s+=20;else if(prix<=cible)s+=14;else if(prix<=max)s+=4;else s-=25}
   if(a.mamad==="oui")s+=15;else if(a.mamad==="abri")s+=6;else if(a.mamad==="non")s-=8;
@@ -255,22 +271,31 @@ function score(a){
   if(num(a.pieces)&&num(a.pieces)<3)s-=20;
   return Math.max(0,Math.min(100,Math.round(s)));
 }
+function prixMin(){return num(state.profile.prixMin)||8100}
+function hiddenByRule(a){const p=num(a.prix);return !!p&&p<prixMin()&&(a.status||"repere")==="repere"}
+function photoList(a){const as=(a.photoAssets||[]).filter(u=>/^(\/_blob\/|https:\/\/)/.test(String(u)));if(as.length)return as;
+  if(state.mode==="static"||state.mode==="local")return (a.photos||[]).filter(u=>/^https:\/\//.test(String(u)));return []}
+function hasTel(a){return waNumber(a.contactTel).length>=11}
+function mapsLink(a){const q=(a.rueHe||a.rue||a.titre||"")+", תל אביב";return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q)}
 function scoreClass(n){return n>=70?"hi":n>=50?"mid":"lo"}
 
 /* ---------- message templates ---------- */
+function cleanName(n){n=String(n||"").replace(/\(.*?\)/g," ").replace(/\b(agence|agency|agent|real estate|nekhasim|nechasim|נכסים|תיווך)\b.*$/i,"").trim();if(!n||/\d/.test(n))return"";return n.split(/\s+/)[0]}
 function vars(a,p){
   a=a||{};p=p||state.profile;
-  return {rue:a.rue||"",rueHe:a.rueHe||"",quartier:a.quartier||"",prix:num(a.prix)?num(a.prix).toLocaleString("fr-FR"):"",pieces:a.pieces||"3",
-    contact:a.contactNom||"",dispos:p.dispos,disposHe:p.disposHe,budget:(num(p.budget)||11000).toLocaleString("fr-FR"),
+  const isAgencyName=/(agence|agency|nekhasim|nechasim|נכסים|real estate|תיווך)/i.test(String(a.contactNom||""));
+  const nm=isAgencyName?"":cleanName(a.contactNom),nmHe=cleanName(a.contactNomHe)||(/[\u0590-\u05FF]/.test(nm)?nm:"");
+  return {rue:a.rue||"",rueHe:a.rueHe||"",contactHe:nmHe,quartier:a.quartier||"",prix:num(a.prix)?num(a.prix).toLocaleString("fr-FR"):"",pieces:a.pieces||"3",
+    contact:/[\u0590-\u05FF]/.test(nm)?"":nm,dispos:p.dispos,disposHe:p.disposHe,budget:(num(p.budget)||11000).toLocaleString("fr-FR"),
     noms:p.noms,nomsHe:p.nomsHe,sig:p.signature||"",tel:p.tel||"",emploi:p.emploi,emploiHe:p.emploiHe,offre:a.offre||""};
 }
 const T={
  premier:{label:"1er contact",
-  he:v=>`שלום${v.contact?" "+v.contact:""},\nראיתי את המודעה על הדירה${(v.rueHe||v.rue)?" ב"+(v.rueHe||v.rue):""}${v.prix?" ב-"+v.prix+" ₪":""}. האם היא עדיין פנויה?\nאני ובת הדודה שלי עולים חדשים מצרפת, שנינו עובדים, רציניים, בלי חיות, והמסמכים שלנו מוכנים. אנחנו מחפשים לכניסה מיידית ולטווח ארוך.\nנשמח לבוא לראות אותה בהקדם – אנחנו זמינים ${v.disposHe}. מתי נוח לך?\nתודה רבה,\n${v.sig}`,
+  he:v=>`שלום${v.contactHe?" "+v.contactHe:""},\nראיתי את המודעה על הדירה${(v.rueHe||v.rue)?" ב"+(v.rueHe||v.rue):""}${v.prix?" ב-"+v.prix+" ₪":""}. האם היא עדיין פנויה?\nאני ובת הדודה שלי עולים חדשים מצרפת, שנינו עובדים, רציניים, בלי חיות, והמסמכים שלנו מוכנים. אנחנו מחפשים לכניסה מיידית ולטווח ארוך.\nנשמח לבוא לראות אותה בהקדם – אנחנו זמינים ${v.disposHe}. מתי נוח לך?\nתודה רבה,\n${v.sig}`,
   en:v=>`Hi${v.contact?" "+v.contact:""},\nI saw your listing for the apartment${v.rue?" on "+v.rue:""}${v.prix?" at "+v.prix+" ₪":""}. Is it still available?\nMy cousin and I are new immigrants from France, both working, serious, no pets, with all our documents ready. We're looking to move in right away, for the long term.\nWe'd love to visit as soon as possible – we're available ${v.dispos}. When works for you?\nThanks a lot,\n${v.sig}`,
   fr:v=>`Bonjour${v.contact?" "+v.contact:""},\nJ'ai vu votre annonce pour l'appartement${v.rue?" rue "+v.rue:""}${v.prix?" à "+v.prix+" ₪":""}. Est-il toujours disponible ?\nMa cousine et moi sommes olim de France, nous travaillons tous les deux, sans animaux, et notre dossier est prêt. Nous cherchons pour une entrée immédiate et sur le long terme.\nNous aimerions le visiter au plus vite : nous sommes disponibles ${v.dispos}. Quand cela vous arrange-t-il ?\nMerci beaucoup,\n${v.sig}`},
  visite:{label:"Demander visite",
-  he:v=>`שלום${v.contact?" "+v.contact:""}, אשמח לתאם צפייה בדירה${(v.rueHe||v.rue)?" ב"+(v.rueHe||v.rue):""}. אנחנו זמינים ${v.disposHe}, גם היום אם אפשר. מה מתאים לך?\n${v.sig}`,
+  he:v=>`שלום${v.contactHe?" "+v.contactHe:""}, אשמח לתאם צפייה בדירה${(v.rueHe||v.rue)?" ב"+(v.rueHe||v.rue):""}. אנחנו זמינים ${v.disposHe}, גם היום אם אפשר. מה מתאים לך?\n${v.sig}`,
   en:v=>`Hi${v.contact?" "+v.contact:""}, I'd like to schedule a visit to the apartment${v.rue?" on "+v.rue:""}. We're available ${v.dispos}, even today if possible. What suits you?\n${v.sig}`,
   fr:v=>`Bonjour${v.contact?" "+v.contact:""}, j'aimerais organiser une visite de l'appartement${v.rue?" rue "+v.rue:""}. Nous sommes disponibles ${v.dispos}, même aujourd'hui si possible. Qu'est-ce qui vous arrange ?\n${v.sig}`},
  questions:{label:"Questions clés",
@@ -278,19 +303,19 @@ const T={
   en:v=>`Hi, a few questions about the apartment${v.rue?" on "+v.rue:""}:\n1. How much is arnona and vaad bayit?\n2. Is there a mamad in the apartment or a shelter in the building?\n3. Which floor, and is there an elevator?\n4. When can we move in?\n5. What guarantees do you require (checks, guarantors, bank guarantee)?\n6. Is there a broker fee?\n7. What's included (AC, fridge, washing machine)?\nThanks!\n${v.sig}`,
   fr:v=>`Bonjour, quelques questions sur l'appartement${v.rue?" rue "+v.rue:""} :\n1. Combien d'arnona et de vaad bayit ?\n2. Y a-t-il un mamad dans l'appartement ou un abri dans l'immeuble ?\n3. Quel étage, et y a-t-il un ascenseur ?\n4. Date d'entrée possible ?\n5. Quelles garanties demandez-vous ?\n6. Y a-t-il des frais d'agence ?\n7. Qu'est-ce qui est inclus (clim, frigo, machine à laver) ?\nMerci !\n${v.sig}`},
  relance:{label:"Relance",
-  he:v=>`שלום שוב${v.contact?" "+v.contact:""}, רציתי לבדוק אם הדירה${(v.rueHe||v.rue)?" ב"+(v.rueHe||v.rue):""} עדיין רלוונטית. אנחנו עדיין מאוד מעוניינים ויכולים לבוא לראות אותה כבר היום או מחר.\n${v.sig}`,
+  he:v=>`שלום שוב${v.contactHe?" "+v.contactHe:""}, רציתי לבדוק אם הדירה${(v.rueHe||v.rue)?" ב"+(v.rueHe||v.rue):""} עדיין רלוונטית. אנחנו עדיין מאוד מעוניינים ויכולים לבוא לראות אותה כבר היום או מחר.\n${v.sig}`,
   en:v=>`Hi again${v.contact?" "+v.contact:""}, just checking whether the apartment${v.rue?" on "+v.rue:""} is still available. We're still very interested and can come see it today or tomorrow.\n${v.sig}`,
   fr:v=>`Bonjour${v.contact?" "+v.contact:""}, je me permets de revenir vers vous : l'appartement${v.rue?" rue "+v.rue:""} est-il toujours disponible ? Nous sommes toujours très intéressés et pouvons passer aujourd'hui ou demain.\n${v.sig}`},
  onveut:{label:"On le prend !",
-  he:v=>`שלום${v.contact?" "+v.contact:""}, תודה על הצפייה! הדירה מאוד מצאה חן בעינינו ואנחנו רוצים להתקדם עכשיו.\nכל המסמכים מוכנים (דרכונים, תעודות עולה, אישורי הכנסה, בטחונות). מה השלבים הבאים? אפשר לחתום כבר השבוע.\n${v.sig}`,
+  he:v=>`שלום${v.contactHe?" "+v.contactHe:""}, תודה על הצפייה! הדירה מאוד מצאה חן בעינינו ואנחנו רוצים להתקדם עכשיו.\nכל המסמכים מוכנים (דרכונים, תעודות עולה, אישורי הכנסה, בטחונות). מה השלבים הבאים? אפשר לחתום כבר השבוע.\n${v.sig}`,
   en:v=>`Hi${v.contact?" "+v.contact:""}, thanks for the visit! We really liked the apartment and want to move forward now.\nAll our documents are ready (passports, teudat olé, proof of income, guarantees). What are the next steps? We can sign this week.\n${v.sig}`,
   fr:v=>`Bonjour${v.contact?" "+v.contact:""}, merci pour la visite ! L'appartement nous plaît beaucoup et nous voulons avancer tout de suite.\nTout notre dossier est prêt (passeports, teudat olé, justificatifs de revenus, garanties). Quelles sont les prochaines étapes ? Nous pouvons signer cette semaine.\n${v.sig}`},
  nego:{label:"Négocier",
-  he:v=>`שלום${v.contact?" "+v.contact:""}, הדירה מאוד מתאימה לנו. האם יש גמישות במחיר? נוכל לחתום מהר על חוזה לשנה עם אופציה להארכה${v.offre?" תמורת "+v.offre+" ₪ לחודש":""}. אנחנו שוכרים שקטים ואחראיים.\n${v.sig}`,
+  he:v=>`שלום${v.contactHe?" "+v.contactHe:""}, הדירה מאוד מתאימה לנו. האם יש גמישות במחיר? נוכל לחתום מהר על חוזה לשנה עם אופציה להארכה${v.offre?" תמורת "+v.offre+" ₪ לחודש":""}. אנחנו שוכרים שקטים ואחראיים.\n${v.sig}`,
   en:v=>`Hi${v.contact?" "+v.contact:""}, the apartment suits us very well. Is there any flexibility on the price? We can sign quickly for one year with an option to extend${v.offre?" at "+v.offre+" ₪ per month":""}. We're quiet, reliable tenants.\n${v.sig}`,
   fr:v=>`Bonjour${v.contact?" "+v.contact:""}, l'appartement nous convient très bien. Y a-t-il une marge sur le prix ? Nous pouvons signer rapidement pour un an avec option de prolongation${v.offre?" à "+v.offre+" ₪ par mois":""}. Nous sommes des locataires calmes et fiables.\n${v.sig}`},
  non:{label:"Refus poli",
-  he:v=>`שלום${v.contact?" "+v.contact:""}, תודה רבה על הזמן. בסוף החלטנו ללכת על דירה אחרת. בהצלחה!\n${v.sig}`,
+  he:v=>`שלום${v.contactHe?" "+v.contactHe:""}, תודה רבה על הזמן. בסוף החלטנו ללכת על דירה אחרת. בהצלחה!\n${v.sig}`,
   en:v=>`Hi${v.contact?" "+v.contact:""}, thank you for your time. We've decided to go with another apartment. Good luck!\n${v.sig}`,
   fr:v=>`Bonjour${v.contact?" "+v.contact:""}, merci beaucoup pour votre temps. Nous avons finalement choisi un autre appartement. Bonne continuation !\n${v.sig}`},
 };
@@ -303,7 +328,7 @@ const AGENCY_T={
 /* ---------- Claude helpers ---------- */
 async function claudeExtract(text){
   const prompt=`Tu aides deux olim à chercher un appartement à Tel Aviv. Voici le texte d'une annonce (souvent en hébreu, copiée de Yad2, Madlan, Facebook ou WhatsApp). Extrais les informations et réponds UNIQUEMENT avec un objet JSON, champs absents = "" :
-{"titre": "titre court en français, ex: 3 pièces Dizengoff", "rue": "rue (+ numéro si connu), en lettres latines", "rueHe": "la même rue écrite en hébreu", "quartier": "un de: ${QUARTIERS.join(" | ")}", "prix": nombre en shekels/mois ou "", "arnona": nombre/mois ou "", "vaad": nombre/mois ou "", "pieces": nombre de pièces israélien (חדרים) ou "", "surface": m² ou "", "etage": nombre ou "", "ascenseur": "oui"|"non"|"", "mamad": "oui"|"abri"|"non"|"", "balcon": true|false, "clim": true|false, "meuble": true|false, "parking": true|false, "animaux": "oui"|"non"|"", "dispo": "date d'entrée AAAA-MM-JJ ou texte", "contactNom": "", "contactTel": "", "contactEmail": "", "contactType": "proprio"|"agent"|"", "frais": "frais d'agence mentionnés ou ''", "resume": "2 phrases en français: points forts / points faibles / pièges éventuels"}
+{"titre": "titre court en français, ex: 3 pièces Dizengoff", "rue": "rue (+ numéro si connu), en lettres latines", "rueHe": "la même rue écrite en hébreu", "quartier": "un de: ${QUARTIERS.join(" | ")}", "prix": nombre en shekels/mois ou "", "arnona": nombre/mois ou "", "vaad": nombre/mois ou "", "pieces": nombre de pièces israélien (חדרים) ou "", "surface": m² ou "", "etage": nombre ou "", "ascenseur": "oui"|"non"|"", "mamad": "oui"|"abri"|"non"|"", "balcon": true|false, "clim": true|false, "meuble": true|false, "parking": true|false, "animaux": "oui"|"non"|"", "dispo": "date d'entrée AAAA-MM-JJ ou texte", "contactNom": "prénom/nom en lettres latines", "contactNomHe": "le même en hébreu si l'annonce est en hébreu", "contactTel": "", "contactEmail": "", "contactType": "proprio"|"agent"|"", "frais": "frais d'agence mentionnés ou ''", "resume": "2 phrases en français: points forts / points faibles / pièges éventuels"}
 
 Annonce :
 """${text.slice(0,8000)}"""`;
@@ -349,7 +374,9 @@ function render(){
 
 /* ----- Annonces ----- */
 function viewAnnonces(m){
-  const apts=[...state.apts.values()];
+  const all=[...state.apts.values()];
+  const hiddenN=all.filter(hiddenByRule).length;
+  const apts=state.showAll?all:all.filter(a=>!hiddenByRule(a));
   const active=apts.filter(a=>!["signe","refuse"].includes(a.status));
   const visites=apts.filter(a=>a.visiteAt&&new Date(a.visiteAt)>Date.now()-3*36e5).sort((a,b)=>new Date(a.visiteAt)-new Date(b.visiteAt));
   const relancer=apts.filter(a=>a.status==="contacte"&&a.contactedAt&&Date.now()-new Date(a.contactedAt)>20*36e5);
@@ -364,6 +391,7 @@ function viewAnnonces(m){
   list.sort(sorters[state.sort]);
   m.innerHTML=`<div class="stack">
    ${state.mode==="local"?`<div class="alert">Mode local : les données restent dans ce navigateur. Ouvre la page depuis claude.ai et connecte-toi pour la partager avec ta cousine.</div>`:""}
+   ${state.mode==="static"?`<div class="alert info small">Les nouvelles annonces arrivent 3 fois par jour${state.listingsAt?" (dernier scan "+esc(relTime(state.listingsAt))+")":""}. Tes étapes et notes restent sur ce téléphone.</div>`:""}
    <div class="kpis">
      <div class="kpi"><span>En cours</span><b>${active.length}</b></div>
      <div class="kpi"><span>Visites à venir</span><b>${visites.length}</b></div>
@@ -372,13 +400,14 @@ function viewAnnonces(m){
    </div>
    ${visites.length||relancer.length?`<div class="grid2">
      ${visites.length?`<div class="panel"><h3>Prochaines visites</h3><div class="list">${visites.slice(0,5).map(a=>`<div class="row between"><button class="btn-ghost" data-open="${esc(a.id)}" style="padding:0;text-align:start">${esc(a.titre||a.rue||"Appartement")}</button><span class="num small">${esc(fmtDT(a.visiteAt))}</span></div>`).join("")}</div></div>`:""}
-     ${relancer.length?`<div class="panel"><h3>À relancer (contacté il y a plus de 20 h sans réponse)</h3><div class="list">${relancer.map(a=>`<div class="row between"><button class="btn-ghost" data-open="${esc(a.id)}" style="padding:0;text-align:start">${esc(a.titre||a.rue||"Appartement")}</button><a class="btn btn-wa" target="_blank" rel="noopener" href="${esc(waLink(a.contactTel,T.relance.he(vars(a))))}" data-log="${esc(a.id)}">Relancer</a></div>`).join("")}</div></div>`:""}
+     ${relancer.length?`<div class="panel"><h3>À relancer (contacté il y a plus de 20 h sans réponse)</h3><div class="list">${relancer.map(a=>`<div class="row between"><button class="btn-ghost" data-open="${esc(a.id)}" style="padding:0;text-align:start">${esc(a.titre||a.rue||"Appartement")}</button>${hasTel(a)?`<a class="btn btn-wa" target="_blank" rel="noopener" href="${esc(waLink(a.contactTel,T.relance.he(vars(a))))}" data-log="${esc(a.id)}">Relancer</a>`:`<button data-open="${esc(a.id)}">Ouvrir</button>`}</div>`).join("")}</div></div>`:""}
    </div>`:""}
    <div class="row between">
      <input id="q" type="search" placeholder="Rechercher une rue, un quartier, un contact…" value="${esc(state.q)}" style="flex:1;min-width:180px">
      <select id="sort" style="width:auto"><option value="score">Tri : score</option><option value="prix">Tri : prix</option><option value="recent">Tri : ajout</option><option value="pub">Tri : date de publication</option></select>
      <a class="btn btn-primary" href="#ajouter">+ Ajouter</a>
    </div>
+   ${hiddenN?`<div class="small muted row">${state.showAll?"Annonces sous "+esc(fmt(prixMin()))+" affichées.":esc(hiddenN+" annonce"+(hiddenN>1?"s":"")+" sous "+fmt(prixMin())+" masquée"+(hiddenN>1?"s":"")+" (ta règle).")} <button class="btn-ghost" id="toggleHidden" style="padding:2px 6px">${state.showAll?"Masquer":"Afficher quand même"}</button></div>`:""}
    <div class="chips" role="group" aria-label="Filtrer par étape">
      ${[["nouveaux","Nouveaux (Claude)"],["actifs","En cours"],["tous","Tous"],...STATUSES].map(([k,l])=>`<button class="chip" data-filter="${k}" aria-pressed="${state.filter===k}">${esc(l)} <span class="num">${k==="nouveaux"?apts.filter(a=>a.auto&&!a.seen&&a.status==="repere").length:k==="actifs"?active.length:k==="tous"?apts.length:apts.filter(a=>a.status===k).length}</span></button>`).join("")}
    </div>
@@ -389,6 +418,7 @@ function viewAnnonces(m){
   $("#q").oninput=e=>{state.q=e.target.value;clearTimeout(viewAnnonces._t);viewAnnonces._t=setTimeout(render,250)};
   $("#q").id="q";
   $("#sort").onchange=e=>{state.sort=e.target.value;render()};
+  if($("#toggleHidden"))$("#toggleHidden").onclick=()=>{state.showAll=!state.showAll;render()};
   m.querySelectorAll("[data-filter]").forEach(b=>b.onclick=()=>{state.filter=b.dataset.filter;render()});
   m.querySelectorAll("[data-open]").forEach(b=>b.onclick=e=>{e.stopPropagation();openSheet(b.dataset.open)});
   m.querySelectorAll("[data-log]").forEach(b=>b.addEventListener("click",()=>logEvent(b.dataset.log,"Relance WhatsApp ouverte")));
@@ -400,7 +430,9 @@ function cardHTML(a){
   if(a.etage!==""&&a.etage!=null)tags.push([num(a.etage)>=3&&a.ascenseur==="non"?"bad":"",`${a.etage==0?"RDC":"Étage "+a.etage}${a.ascenseur==="oui"?" · ascenseur":a.ascenseur==="non"?" · sans asc.":""}`]);
   if(a.balcon)tags.push(["good","Balcon"]);if(a.clim)tags.push(["","Clim"]);if(a.meuble)tags.push(["","Meublé"]);if(a.parking)tags.push(["","Parking"]);
   if(a.dispo)tags.push(["","Dispo "+a.dispo]);
+  const ph=photoList(a)[0];
   return `<div class="card" data-open="${esc(a.id)}" role="button" tabindex="0">
+    ${ph?`<img class="thumb" src="${esc(ph)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`:""}
     <div class="card-top">
       <div class="score ${scoreClass(s)}" title="Score de correspondance">${s}</div>
       <div style="flex:1;min-width:0">
@@ -446,13 +478,14 @@ function aptFormFields(a){
      <label class="check"><input type="checkbox" id="f_parking" ${a.parking?"checked":""}>Parking</label>
    </div>
    <label>Contact<input id="f_contactNom" value="${esc(a.contactNom)}"></label>
+   <label>Contact (hébreu)<input id="f_contactNomHe" dir="rtl" value="${esc(a.contactNomHe)}"></label>
    <label>Téléphone<input id="f_contactTel" type="tel" value="${esc(a.contactTel)}" placeholder="05X-XXXXXXX"></label>
    <label>Email<input id="f_contactEmail" type="email" value="${esc(a.contactEmail)}"></label>
    <label>Type<select id="f_contactType"><option value="">—</option><option value="proprio" ${a.contactType==="proprio"?"selected":""}>Propriétaire</option><option value="agent" ${a.contactType==="agent"?"selected":""}>Agent (תיווך)</option></select></label>
    <label class="wide">Notes<textarea id="f_notes" dir="auto" placeholder="Impressions, frais d'agence, garanties demandées…">${esc(a.notes)}</textarea></label>
   </div>`;
 }
-const FIELDS=["titre","url","rue","rueHe","quartier","source","status","prix","arnona","vaad","pieces","surface","etage","ascenseur","mamad","animaux","dispo","visiteAt","note","contactNom","contactTel","contactEmail","contactType","notes"];
+const FIELDS=["titre","url","rue","rueHe","contactNomHe","quartier","source","status","prix","arnona","vaad","pieces","surface","etage","ascenseur","mamad","animaux","dispo","visiteAt","note","contactNom","contactTel","contactEmail","contactType","notes"];
 const BOOLS=["balcon","clim","meuble","parking"];
 function readForm(root){const o={};FIELDS.forEach(f=>{const el=$("#f_"+f,root);if(el)o[f]=el.value.trim()});BOOLS.forEach(f=>{const el=$("#f_"+f,root);if(el)o[f]=el.checked});if(o.visiteAt)o.visiteAt=new Date(o.visiteAt).toISOString();return o}
 function fillForm(root,d){FIELDS.forEach(f=>{const el=$("#f_"+f,root);if(el&&d[f]!==undefined&&d[f]!==""&&d[f]!==null){if(el.tagName==="SELECT"){const v=String(d[f]);if([...el.options].some(o=>o.value===v||o.text===v))el.value=[...el.options].find(o=>o.value===v||o.text===v).value}else el.value=d[f]}});BOOLS.forEach(f=>{const el=$("#f_"+f,root);if(el&&typeof d[f]==="boolean")el.checked=d[f]})}
@@ -494,7 +527,8 @@ async function logEvent(id,text,patch){const a=state.apts.get(id);if(!a)return;c
 function renderSheet(){
   const a=state.apts.get(sheetId);const d=$("#sheet");if(!a){d.innerHTML="";return}
   const s=score(a);const v=vars(a);const hasEmail=/\S+@\S+\.\S+/.test(a.contactEmail||"");
-  const url=safeUrl(a.url);
+  const url=safeUrl(a.url);const srcUrl=safeUrl(a.sourceUrl);
+  const srcName=/yad2/.test(srcUrl)?"Yad2":/facebook/.test(srcUrl)?"Facebook":/madlan/.test(srcUrl)?"Madlan":"l'annonce d'origine";
   d.innerHTML=`<div class="sheet-head">
      <div class="score ${scoreClass(s)}">${s}</div>
      <div style="flex:1;min-width:0"><h2 style="overflow-wrap:anywhere">${esc(a.titre||a.rue||"Appartement")}</h2><div class="small muted">${esc([a.quartier,a.rue].filter(Boolean).join(" · "))}</div></div>
@@ -504,9 +538,12 @@ function renderSheet(){
      <div class="row">
        <select id="st" style="width:auto" aria-label="Étape">${STATUSES.map(([k,l])=>`<option value="${k}" ${a.status===k?"selected":""}>${l}</option>`).join("")}</select>
        ${url?`<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">Voir l'annonce ↗</a>`:""}
+       ${srcUrl&&srcUrl!==url?`<a class="btn" href="${esc(srcUrl)}" target="_blank" rel="noopener">Sur ${esc(srcName)} ↗</a>`:""}
+       ${(a.rue||a.rueHe)?`<a class="btn" href="${esc(mapsLink(a))}" target="_blank" rel="noopener">Carte ↗</a>`:""}
        ${a.contactTel?`<span class="small muted">Tél. <span class="num" style="user-select:all">${esc(a.contactTel)}</span></span>`:""}
      </div>
-     <div class="row"><span class="price">${fmt(num(a.prix))}</span><span class="small muted">loyer + arnona + vaad = <b class="num">${fmt(totalCost(a))}</b> /mois${num(a.prix)?" · par personne ≈ <b class='num'>"+fmt(Math.round(totalCost(a)/2))+"</b>":""}</span></div>
+     ${photoList(a).length?`<div class="gallery">${photoList(a).map(u=>`<img src="${esc(u)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`).join("")}</div>`:(a.photos&&a.photos.length&&url?`<div class="small muted">${a.photos.length} photo${a.photos.length>1?"s":""} sur l'annonce : <a href="${esc(url)}" target="_blank" rel="noopener">les voir ↗</a></div>`:"")}
+     <div class="row"><span class="price">${fmt(num(a.prix))}</span><span class="small muted">${num(a.arnona)||num(a.vaad)?`loyer + arnona + vaad = <b class="num">${fmt(totalCost(a))}</b> /mois`:`arnona et vaad non indiqués (compte ~250–600 ₪ en plus)`}${num(a.prix)?" · par personne ≈ <b class='num'>"+fmt(Math.round(totalCost(a)/2))+"</b>":""}</span></div>
      <div class="small muted">${a.auto?"Trouvée par Claude · ":""}${a.publishedAt?"Publiée "+esc(relDay(a.publishedAt))+" · ":""}${a.createdAt?(a.auto?"trouvée ":"ajoutée ")+esc(relTime(a.createdAt)):""}</div>
      ${a.resume?`<div class="alert info small">${esc(a.resume)}${a.frais?" · Frais : "+esc(a.frais):""}</div>`:""}
 
@@ -517,13 +554,16 @@ function renderSheet(){
        ${d.dataset.kind==="nego"?`<label>Offre ₪/mois<input id="offre" inputmode="numeric" value="${esc(a.offre||"")}"></label>`:""}
        <textarea id="msg" dir="auto"></textarea>
        <div class="row">
-         <a class="btn btn-wa" id="sendWa" target="_blank" rel="noopener" href="#">WhatsApp${a.contactTel?"":" (choisir le contact)"}</a>
+         ${hasTel(a)?`<a class="btn btn-wa" id="sendWa" target="_blank" rel="noopener" href="#">Envoyer sur WhatsApp</a>`:""}
          <button id="copyMsg">Copier</button>
          ${sample?`<button id="aiMsg">✨ Version sur mesure (Claude)</button>`:""}
          ${hasEmail&&mcp?`<button id="draftMail">Brouillon Gmail</button><button id="sendMail">Envoyer par Gmail</button>`:""}
        </div>
        <div id="mailConfirm"></div>
-       <p class="small muted" style="margin:0">WhatsApp s'ouvre avec le message pré-rempli : tu n'as plus qu'à appuyer sur Envoyer.${hasEmail?"":" Ajoute un email au contact pour l'envoi Gmail."}</p>
+       ${hasTel(a)?`<p class="small muted" style="margin:0">WhatsApp s'ouvre sur la conversation avec <span class="num">${esc(a.contactTel)}</span>, message déjà écrit : il reste à appuyer sur Envoyer.</p>`:
+       `<div class="notel stack" style="gap:8px"><p class="small" style="margin:0"><b>Pas de numéro dans la fiche</b> : le site d'annonces le cache. ${srcUrl||url?`Ouvre ${srcUrl?esc(srcName):"l'annonce"}, appuie sur « הצג מספר / afficher le numéro », copie-le et colle-le ici :`:`Ajoute le numéro du contact :`}</p>
+         <div class="row">${srcUrl||url?`<a class="btn" href="${esc(srcUrl||url)}" target="_blank" rel="noopener">Voir le numéro sur ${esc(srcUrl?srcName:"l'annonce")} ↗</a>`:""}<input id="telQuick" type="tel" inputmode="tel" placeholder="05X-XXXXXXX" style="flex:1;min-width:140px"><button class="btn-primary" id="telSave">OK</button></div>
+         <a class="small" id="waNoNum" target="_blank" rel="noopener" href="#">Ou ouvrir WhatsApp et choisir le contact moi-même ↗</a></div>`}
      </section>
 
      <details class="panel"><summary><b>Fiche complète</b> (modifier)</summary><div style="margin-top:12px" class="stack">${aptFormFields(a)}<div class="row"><button class="btn-primary" id="saveEdit">Enregistrer</button><button class="btn-danger" id="del">Supprimer</button><span id="delConfirm"></span></div></div></details>
@@ -537,7 +577,7 @@ function renderSheet(){
   const lang=()=>d.dataset.lang||"he",kind=()=>d.dataset.kind||"premier";
   const msg=$("#msg",d);
   const refill=()=>{const vv=vars({...a,offre:($("#offre",d)||{}).value||a.offre});msg.value=T[kind()][lang()](vv);syncWa()};
-  const syncWa=()=>{$("#sendWa",d).href=waLink(a.contactTel,msg.value)};
+  const syncWa=()=>{if($("#sendWa",d))$("#sendWa",d).href=waLink(a.contactTel,msg.value);if($("#waNoNum",d))$("#waNoNum",d).href="https://api.whatsapp.com/send?text="+encodeURIComponent(msg.value)};
   refill();
   msg.oninput=syncWa;
   if($("#offre",d))$("#offre",d).oninput=refill;
@@ -545,7 +585,9 @@ function renderSheet(){
   d.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>{d.dataset.lang=b.dataset.lang;renderSheet()});
   d.querySelectorAll("[data-kind]").forEach(b=>b.onclick=()=>{d.dataset.kind=b.dataset.kind;renderSheet()});
   $("#copyMsg",d).onclick=()=>copy(msg.value);
-  $("#sendWa",d).addEventListener("click",()=>{
+  if($("#telSave",d))$("#telSave",d).onclick=async()=>{const t=$("#telQuick",d).value.trim();if(waNumber(t).length<11){toast("Numéro invalide : format 05X-XXXXXXX");return}
+    await store.put("apts",a.id,{...stripId(a),contactTel:t,updatedAt:nowISO()});toast("Numéro enregistré");renderSheet()};
+  if($("#sendWa",d))$("#sendWa",d).addEventListener("click",()=>{
     const patch=a.status==="repere"&&kind()==="premier"?{status:"contacte",contactedAt:nowISO()}:{};
     setTimeout(()=>logEvent(a.id,"WhatsApp ouvert : "+T[kind()].label,patch),300);
     if(patch.status)toast("Passé en « Contacté ». Reviens changer l'étape s'il ne l'a pas été.");
@@ -653,15 +695,16 @@ function viewProfil(m){
     <label>Ton tél. israélien<input id="p_tel" type="tel" value="${esc(p.tel)}" placeholder="05X-XXXXXXX"></label>
     <label>Budget max ₪<input id="p_budget" inputmode="numeric" value="${esc(p.budget)}"></label>
     <label>Budget idéal ₪<input id="p_budgetCible" inputmode="numeric" value="${esc(p.budgetCible)}"></label>
+    <label>Loyer minimum ₪<input id="p_prixMin" inputmode="numeric" value="${esc(p.prixMin)}"></label>
     <label class="wide">Métier (FR/EN)<input id="p_emploi" value="${esc(p.emploi)}"></label>
     <label class="wide">Métier (hébreu)<input id="p_emploiHe" dir="rtl" value="${esc(p.emploiHe)}"></label>
     <label class="wide">Disponibilités (FR/EN)<input id="p_dispos" value="${esc(p.dispos)}"></label>
     <label class="wide">Disponibilités (hébreu)<input id="p_disposHe" dir="rtl" value="${esc(p.disposHe)}"></label>
    </div>
    <div class="row"><button class="btn-primary" id="psave">Enregistrer</button></div>
-   <p class="small muted" style="margin:0">Le score (0-100) favorise : loyer sous le budget idéal, mamad, ascenseur si étage ≥ 3, balcon, clim, quartiers centraux, et ta note après visite.</p>
+   <p class="small muted" style="margin:0">Règle : les annonces sous le loyer minimum sont masquées (sauf si tu les as déjà traitées). Le score (0-100) favorise : loyer sous le budget idéal, mamad, ascenseur si étage ≥ 3, balcon, clim, quartiers centraux, et ta note après visite.</p>
   </div></div>`;
-  $("#psave").onclick=async()=>{const np={...state.profile};["signature","tel","budget","budgetCible","emploi","emploiHe","dispos","disposHe"].forEach(k=>np[k]=$("#p_"+k).value.trim());np.budget=num(np.budget)||11000;np.budgetCible=num(np.budgetCible)||9500;state.profile=np;await store.putDoc("settings/profile",np);lsSave();toast("Profil enregistré");m.dataset.view="";render()};
+  $("#psave").onclick=async()=>{const np={...state.profile};["signature","tel","budget","budgetCible","prixMin","emploi","emploiHe","dispos","disposHe"].forEach(k=>np[k]=$("#p_"+k).value.trim());np.budget=num(np.budget)||11000;np.prixMin=num(np.prixMin)||8100;np.budgetCible=num(np.budgetCible)||9500;state.profile=np;await store.putDoc("settings/profile",np);lsSave();toast("Profil enregistré");m.dataset.view="";render()};
 }
 
 boot();
