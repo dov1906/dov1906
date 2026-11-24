@@ -180,7 +180,7 @@ const DOSSIER=[
 const DEFAULT_PROFILE={
   noms:"Dov et ma cousine", nomsHe:"דב ובת הדודה שלו", signature:"Dov", tel:"", email:"",
   dispos:"tous les jours, dès que possible", disposHe:"בכל יום, מתי שנוח לך", budget:11000, budgetCible:9500,
-  emploi:"ingénieur biomédical / développeur", emploiHe:"מהנדס ביו-רפואי / מפתח תוכנה",
+  emploi:"ingénieur biomédical / développeur, et ma cousine travaille aussi", emploiHe:"מהנדס ביו-רפואי ומפתח תוכנה, ובת הדודה שלי עובדת גם",
 };
 
 /* ---------- utils ---------- */
@@ -196,6 +196,7 @@ function waLink(phone,text){const n=waNumber(phone);return "https://wa.me/"+(n||
 function toast(m){const t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2600)}
 async function copy(text){try{await navigator.clipboard.writeText(text);toast("Copié")}catch(e){toast("Copie impossible ici : sélectionne le texte")}}
 function relTime(iso){if(!iso)return"";const d=(Date.now()-new Date(iso))/36e5;if(d<1)return"il y a "+Math.max(1,Math.round(d*60))+" min";if(d<48)return"il y a "+Math.round(d)+" h";return"il y a "+Math.round(d/24)+" j"}
+function relDay(d){if(!d)return"";const t=new Date(d);if(isNaN(t))return String(d);const days=Math.floor((Date.now()-t)/864e5);if(days<=0)return"aujourd'hui";if(days===1)return"hier";return"il y a "+days+" j ("+t.toLocaleDateString("fr-FR",{day:"numeric",month:"short"})+")"}
 function fmtDT(iso){if(!iso)return"";const d=new Date(iso);if(isNaN(d))return iso;return d.toLocaleString("fr-FR",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
 
 /* ---------- store (db capability, localStorage fallback) ---------- */
@@ -265,9 +266,9 @@ function vars(a,p){
 }
 const T={
  premier:{label:"1er contact",
-  he:v=>`שלום${v.contact?" "+v.contact:""},\nראיתי את המודעה על הדירה${(v.rueHe||v.rue)?" ב"+(v.rueHe||v.rue):""}${v.prix?" ב-"+v.prix+" ₪":""}. האם היא עדיין פנויה?\nאני ובת הדודה שלי עולים חדשים מצרפת, רציניים ועובדים, והמסמכים שלנו מוכנים. אנחנו מחפשים לכניסה מיידית ולטווח ארוך.\nנשמח לבוא לראות אותה בהקדם – אנחנו זמינים ${v.disposHe}. מתי נוח לך?\nתודה רבה,\n${v.sig}`,
-  en:v=>`Hi${v.contact?" "+v.contact:""},\nI saw your listing for the apartment${v.rue?" on "+v.rue:""}${v.prix?" at "+v.prix+" ₪":""}. Is it still available?\nMy cousin and I are new immigrants from France, working and serious, with all our documents ready. We're looking to move in right away, for the long term.\nWe'd love to visit as soon as possible – we're available ${v.dispos}. When works for you?\nThanks a lot,\n${v.sig}`,
-  fr:v=>`Bonjour${v.contact?" "+v.contact:""},\nJ'ai vu votre annonce pour l'appartement${v.rue?" rue "+v.rue:""}${v.prix?" à "+v.prix+" ₪":""}. Est-il toujours disponible ?\nMa cousine et moi sommes olim de France, nous travaillons et notre dossier est prêt. Nous cherchons pour une entrée immédiate et sur le long terme.\nNous aimerions le visiter au plus vite : nous sommes disponibles ${v.dispos}. Quand cela vous arrange-t-il ?\nMerci beaucoup,\n${v.sig}`},
+  he:v=>`שלום${v.contact?" "+v.contact:""},\nראיתי את המודעה על הדירה${(v.rueHe||v.rue)?" ב"+(v.rueHe||v.rue):""}${v.prix?" ב-"+v.prix+" ₪":""}. האם היא עדיין פנויה?\nאני ובת הדודה שלי עולים חדשים מצרפת, שנינו עובדים, רציניים, בלי חיות, והמסמכים שלנו מוכנים. אנחנו מחפשים לכניסה מיידית ולטווח ארוך.\nנשמח לבוא לראות אותה בהקדם – אנחנו זמינים ${v.disposHe}. מתי נוח לך?\nתודה רבה,\n${v.sig}`,
+  en:v=>`Hi${v.contact?" "+v.contact:""},\nI saw your listing for the apartment${v.rue?" on "+v.rue:""}${v.prix?" at "+v.prix+" ₪":""}. Is it still available?\nMy cousin and I are new immigrants from France, both working, serious, no pets, with all our documents ready. We're looking to move in right away, for the long term.\nWe'd love to visit as soon as possible – we're available ${v.dispos}. When works for you?\nThanks a lot,\n${v.sig}`,
+  fr:v=>`Bonjour${v.contact?" "+v.contact:""},\nJ'ai vu votre annonce pour l'appartement${v.rue?" rue "+v.rue:""}${v.prix?" à "+v.prix+" ₪":""}. Est-il toujours disponible ?\nMa cousine et moi sommes olim de France, nous travaillons tous les deux, sans animaux, et notre dossier est prêt. Nous cherchons pour une entrée immédiate et sur le long terme.\nNous aimerions le visiter au plus vite : nous sommes disponibles ${v.dispos}. Quand cela vous arrange-t-il ?\nMerci beaucoup,\n${v.sig}`},
  visite:{label:"Demander visite",
   he:v=>`שלום${v.contact?" "+v.contact:""}, אשמח לתאם צפייה בדירה${(v.rueHe||v.rue)?" ב"+(v.rueHe||v.rue):""}. אנחנו זמינים ${v.disposHe}, גם היום אם אפשר. מה מתאים לך?\n${v.sig}`,
   en:v=>`Hi${v.contact?" "+v.contact:""}, I'd like to schedule a visit to the apartment${v.rue?" on "+v.rue:""}. We're available ${v.dispos}, even today if possible. What suits you?\n${v.sig}`,
@@ -294,9 +295,9 @@ const T={
   fr:v=>`Bonjour${v.contact?" "+v.contact:""}, merci beaucoup pour votre temps. Nous avons finalement choisi un autre appartement. Bonne continuation !\n${v.sig}`},
 };
 const AGENCY_T={
-  he:v=>`שלום,\nאני ובת הדודה שלי עולים חדשים מצרפת ומחפשים דירת 3 חדרים (סלון + 2 חדרי שינה) להשכרה בתל אביב: לב העיר, הצפון הישן, הצפון החדש, נווה צדק, פלורנטין, כרם התימנים ודומיהן (לא יפו ולא רמת אביב).\nתקציב: עד ${v.budget} ₪ לחודש. כניסה מיידית, לטווח ארוך.\nאנחנו עובדים (${v.emploiHe}), רציניים, והמסמכים מוכנים. נשמח שתעדכנו אותנו בכל דירה מתאימה${v.tel?", גם בוואטסאפ: "+v.tel:""}.\nתודה רבה,\n${v.sig}`,
-  en:v=>`Hello,\nMy cousin and I are new immigrants from France looking to rent a 3-room apartment (living room + 2 bedrooms) in central Tel Aviv: Lev Ha'ir, Old North, New North, Neve Tzedek, Florentin, Kerem HaTeimanim and similar (not Jaffa, not Ramat Aviv).\nBudget: up to ${v.budget} ₪/month. Immediate move-in, long term.\nWe're working (${v.emploi}), serious, and our documents are ready. Please send us anything that fits${v.tel?", WhatsApp is best: "+v.tel:""}.\nMany thanks,\n${v.sig}`,
-  fr:v=>`Bonjour,\nMa cousine et moi sommes olim de France et cherchons à louer un 3 pièces (salon + 2 chambres) à Tel Aviv centre : Lev Ha'ir, Vieux Nord, Nouveau Nord, Neve Tzedek, Florentin, Kerem HaTeimanim… (pas Yafo, pas Ramat Aviv).\nBudget : jusqu'à ${v.budget} ₪/mois. Entrée immédiate, long terme.\nNous travaillons (${v.emploi}), sommes sérieux et notre dossier est prêt. Merci de nous envoyer tout ce qui correspond${v.tel?", idéalement par WhatsApp : "+v.tel:""}.\nMerci beaucoup,\n${v.sig}`,
+  he:v=>`שלום,\nאני ובת הדודה שלי עולים חדשים מצרפת ומחפשים דירת 3 חדרים (סלון + 2 חדרי שינה) להשכרה בתל אביב: לב העיר, הצפון הישן, הצפון החדש, נווה צדק, פלורנטין, כרם התימנים ודומיהן (לא יפו ולא רמת אביב).\nתקציב: עד ${v.budget} ₪ לחודש. כניסה מיידית, לטווח ארוך.\nשנינו עובדים (${v.emploiHe}), רציניים, בלי חיות, והמסמכים מוכנים. נשמח שתעדכנו אותנו בכל דירה מתאימה${v.tel?", גם בוואטסאפ: "+v.tel:""}.\nתודה רבה,\n${v.sig}`,
+  en:v=>`Hello,\nMy cousin and I are new immigrants from France looking to rent a 3-room apartment (living room + 2 bedrooms) in central Tel Aviv: Lev Ha'ir, Old North, New North, Neve Tzedek, Florentin, Kerem HaTeimanim and similar (not Jaffa, not Ramat Aviv).\nBudget: up to ${v.budget} ₪/month. Immediate move-in, long term.\nWe both work (${v.emploi}), serious, no pets, and our documents are ready. Please send us anything that fits${v.tel?", WhatsApp is best: "+v.tel:""}.\nMany thanks,\n${v.sig}`,
+  fr:v=>`Bonjour,\nMa cousine et moi sommes olim de France et cherchons à louer un 3 pièces (salon + 2 chambres) à Tel Aviv centre : Lev Ha'ir, Vieux Nord, Nouveau Nord, Neve Tzedek, Florentin, Kerem HaTeimanim… (pas Yafo, pas Ramat Aviv).\nBudget : jusqu'à ${v.budget} ₪/mois. Entrée immédiate, long terme.\nNous travaillons tous les deux (${v.emploi}), sommes sérieux, sans animaux, et notre dossier est prêt. Merci de nous envoyer tout ce qui correspond${v.tel?", idéalement par WhatsApp : "+v.tel:""}.\nMerci beaucoup,\n${v.sig}`,
 };
 
 /* ---------- Claude helpers ---------- */
@@ -312,7 +313,7 @@ async function claudeMessage(a,kind,lang,onText){
   const v=vars(a);const langName={he:"hébreu (naturel, comme un Israélien sur WhatsApp, pas trop formel)",en:"anglais",fr:"français"}[lang];
   const prompt=`Écris un message WhatsApp court en ${langName} pour le contact d'une annonce d'appartement à Tel Aviv.
 Type de message : ${T[kind]?T[kind].label:kind}.
-Qui écrit : ${v.sig}, qui cherche avec sa cousine ; olim de France, ${v.emploi}, dossier prêt, entrée immédiate, long terme. Disponibilités : ${v.dispos}.
+Qui écrit : ${v.sig}, qui cherche avec sa cousine ; olim de France, tous les deux travaillent (${v.emploi}), pas d'animaux, dossier prêt, entrée immédiate, long terme. Disponibilités : ${v.dispos}.
 Annonce : ${JSON.stringify({titre:a.titre,rue:a.rue,quartier:a.quartier,prix:a.prix,pieces:a.pieces,etage:a.etage,mamad:a.mamad,balcon:a.balcon,dispo:a.dispo,contact:a.contactNom,type:a.contactType,notes:a.notes,resume:a.resume}).slice(0,3000)}
 Règles : 3 à 6 lignes, chaleureux et direct, mentionne un détail précis de l'annonce pour montrer qu'on l'a lue, termine par une question qui appelle une réponse rapide, signe "${v.sig}". Pas d'emoji excessif. Réponds uniquement avec le message.`;
   const r=await sample(prompt,{modelTier:"default",cache:false,onText:u=>onText&&onText(u.text)});
@@ -355,10 +356,11 @@ function viewAnnonces(m){
   const avgScore=active.length?Math.round(active.reduce((s,a)=>s+score(a),0)/active.length):0;
   let list=apts.filter(a=>{
     if(state.filter==="actifs"&&["signe","refuse"].includes(a.status))return false;
-    if(state.filter!=="actifs"&&state.filter!=="tous"&&a.status!==state.filter)return false;
+    if(state.filter==="nouveaux"&&!(a.auto&&!a.seen&&a.status==="repere"))return false;
+    if(!["actifs","tous","nouveaux"].includes(state.filter)&&a.status!==state.filter)return false;
     if(state.q){const q=state.q.toLowerCase();return [a.titre,a.rue,a.quartier,a.notes,a.contactNom].join(" ").toLowerCase().includes(q)}
     return true});
-  const sorters={score:(a,b)=>score(b)-score(a),prix:(a,b)=>(num(a.prix)||1e9)-(num(b.prix)||1e9),recent:(a,b)=>String(b.createdAt).localeCompare(String(a.createdAt))};
+  const sorters={score:(a,b)=>score(b)-score(a),prix:(a,b)=>(num(a.prix)||1e9)-(num(b.prix)||1e9),recent:(a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)),pub:(a,b)=>String(b.publishedAt||b.createdAt).localeCompare(String(a.publishedAt||a.createdAt))};
   list.sort(sorters[state.sort]);
   m.innerHTML=`<div class="stack">
    ${state.mode==="local"?`<div class="alert">Mode local : les données restent dans ce navigateur. Ouvre la page depuis claude.ai et connecte-toi pour la partager avec ta cousine.</div>`:""}
@@ -366,7 +368,7 @@ function viewAnnonces(m){
      <div class="kpi"><span>En cours</span><b>${active.length}</b></div>
      <div class="kpi"><span>Visites à venir</span><b>${visites.length}</b></div>
      <div class="kpi"><span>À relancer</span><b>${relancer.length}</b></div>
-     <div class="kpi"><span>Score moyen</span><b>${avgScore||"—"}</b></div>
+     <div class="kpi"><span>Nouveaux (Claude)</span><b>${apts.filter(a=>a.auto&&!a.seen&&a.status==="repere").length}</b></div>
    </div>
    ${visites.length||relancer.length?`<div class="grid2">
      ${visites.length?`<div class="panel"><h3>Prochaines visites</h3><div class="list">${visites.slice(0,5).map(a=>`<div class="row between"><button class="btn-ghost" data-open="${esc(a.id)}" style="padding:0;text-align:start">${esc(a.titre||a.rue||"Appartement")}</button><span class="num small">${esc(fmtDT(a.visiteAt))}</span></div>`).join("")}</div></div>`:""}
@@ -374,11 +376,11 @@ function viewAnnonces(m){
    </div>`:""}
    <div class="row between">
      <input id="q" type="search" placeholder="Rechercher une rue, un quartier, un contact…" value="${esc(state.q)}" style="flex:1;min-width:180px">
-     <select id="sort" style="width:auto"><option value="score">Tri : score</option><option value="prix">Tri : prix</option><option value="recent">Tri : plus récents</option></select>
+     <select id="sort" style="width:auto"><option value="score">Tri : score</option><option value="prix">Tri : prix</option><option value="recent">Tri : ajout</option><option value="pub">Tri : date de publication</option></select>
      <a class="btn btn-primary" href="#ajouter">+ Ajouter</a>
    </div>
    <div class="chips" role="group" aria-label="Filtrer par étape">
-     ${[["actifs","En cours"],["tous","Tous"],...STATUSES].map(([k,l])=>`<button class="chip" data-filter="${k}" aria-pressed="${state.filter===k}">${esc(l)} <span class="num">${k==="actifs"?active.length:k==="tous"?apts.length:apts.filter(a=>a.status===k).length}</span></button>`).join("")}
+     ${[["nouveaux","Nouveaux (Claude)"],["actifs","En cours"],["tous","Tous"],...STATUSES].map(([k,l])=>`<button class="chip" data-filter="${k}" aria-pressed="${state.filter===k}">${esc(l)} <span class="num">${k==="nouveaux"?apts.filter(a=>a.auto&&!a.seen&&a.status==="repere").length:k==="actifs"?active.length:k==="tous"?apts.length:apts.filter(a=>a.status===k).length}</span></button>`).join("")}
    </div>
    ${list.length?`<div class="cards">${list.map(cardHTML).join("")}</div>`:
      `<div class="empty"><p><b>${apts.length?"Rien dans ce filtre.":"Aucune annonce pour l'instant."}</b></p><p>Colle le texte d'une annonce Yad2, Madlan ou Facebook dans « + Ajouter » : Claude remplit la fiche et prépare le message en hébreu.</p><a class="btn btn-primary" href="#ajouter">Ajouter la première annonce</a></div>`}
@@ -408,7 +410,7 @@ function cardHTML(a){
     </div>
     <div class="row between"><span class="price">${fmt(num(a.prix))}</span>${tot>num(a.prix)?`<span class="small muted">total/mois <span class="num">${fmt(tot)}</span></span>`:""}</div>
     ${tags.length?`<div class="tags">${tags.map(([c,t])=>`<span class="tag ${c}">${esc(t)}</span>`).join("")}</div>`:""}
-    <div class="small muted">${esc(a.source||"")}${a.createdAt?" · ajouté "+esc(relTime(a.createdAt)):""}${a.visiteAt?" · visite "+esc(fmtDT(a.visiteAt)):""}</div>
+    <div class="small muted">${a.auto&&!a.seen?`<span class="tag good">Nouveau · trouvé par Claude</span> `:""}${esc(a.source||"")}${a.publishedAt?" · publiée "+esc(relDay(a.publishedAt)):""}${a.createdAt?" · "+(a.auto?"trouvée ":"ajoutée ")+esc(relTime(a.createdAt)):""}${a.visiteAt?" · visite "+esc(fmtDT(a.visiteAt)):""}</div>
   </div>`;
 }
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches&&e.target.matches(".card[data-open]"))openSheet(e.target.dataset.open)});
@@ -486,7 +488,7 @@ function viewAjouter(m){
 
 /* ----- Sheet (detail) ----- */
 let sheetId=null;
-function openSheet(id){sheetId=id;renderSheet();const d=$("#sheet");if(!d.open){try{d.showModal()}catch(e){d.setAttribute("open","")}}}
+function openSheet(id){sheetId=id;const _a=state.apts.get(id);if(_a&&_a.auto&&!_a.seen)store.put("apts",id,{...stripId(_a),seen:true});renderSheet();const d=$("#sheet");if(!d.open){try{d.showModal()}catch(e){d.setAttribute("open","")}}}
 $("#sheet").addEventListener("close",()=>{sheetId=null});
 async function logEvent(id,text,patch){const a=state.apts.get(id);if(!a)return;const h=[...(a.history||[]),{t:nowISO(),a:text}].slice(-40);await store.put("apts",id,{...stripId(a),...(patch||{}),history:h,updatedAt:nowISO()})}
 function renderSheet(){
@@ -505,6 +507,7 @@ function renderSheet(){
        ${a.contactTel?`<span class="small muted">Tél. <span class="num" style="user-select:all">${esc(a.contactTel)}</span></span>`:""}
      </div>
      <div class="row"><span class="price">${fmt(num(a.prix))}</span><span class="small muted">loyer + arnona + vaad = <b class="num">${fmt(totalCost(a))}</b> /mois${num(a.prix)?" · par personne ≈ <b class='num'>"+fmt(Math.round(totalCost(a)/2))+"</b>":""}</span></div>
+     <div class="small muted">${a.auto?"Trouvée par Claude · ":""}${a.publishedAt?"Publiée "+esc(relDay(a.publishedAt))+" · ":""}${a.createdAt?(a.auto?"trouvée ":"ajoutée ")+esc(relTime(a.createdAt)):""}</div>
      ${a.resume?`<div class="alert info small">${esc(a.resume)}${a.frais?" · Frais : "+esc(a.frais):""}</div>`:""}
 
      <section class="panel msgbox">
