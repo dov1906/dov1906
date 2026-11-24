@@ -69,11 +69,11 @@ h3{font-family:var(--f-display);font-size:1rem;margin:0}
 .grid2{display:grid;grid-template-columns:1fr;gap:14px}
 @media(min-width:820px){.grid2{grid-template-columns:1fr 1fr}}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;min-width:0}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-@media(max-width:560px){.kpis{grid-template-columns:repeat(2,1fr)}}
-.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px}
-.kpi b{display:block;font-family:var(--f-mono);font-size:1.35rem;font-variant-numeric:tabular-nums}
-.kpi span{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:8px 10px;min-width:0}
+.kpi b{display:block;font-family:var(--f-mono);font-size:1.25rem;font-variant-numeric:tabular-nums}
+.kpi span{display:block;font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;line-height:1.2}
+@media(max-width:480px){.kpi{padding:6px 8px}.kpi b{font-size:1.1rem}}
 button,.btn{font:inherit;font-weight:500;font-size:.9rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 12px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;line-height:1.2}
 button:hover,.btn:hover{border-color:var(--accent)}
 .btn-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
@@ -199,7 +199,7 @@ const DOSSIER=[
 ];
 const DEFAULT_PROFILE={
   noms:"Dov et ma cousine", nomsHe:"דב ובת הדודה שלו", signature:"Dov", tel:"", email:"",
-  dispos:"tous les jours, dès que possible", disposHe:"בכל יום, מתי שנוח לך", budget:11000, budgetCible:9500, prixMin:8100,
+  dispos:"dès maintenant pour visiter, entrée à partir du 8 décembre", disposHe:"כבר עכשיו לצפייה, כניסה מ-8 בדצמבר", budget:10500, budgetCible:9500, prixMin:8100, budgetToutCompris:true,
   emploi:"ingénieur biomédical / développeur, et ma cousine travaille aussi", emploiHe:"מהנדס ביו-רפואי ומפתח תוכנה, ובת הדודה שלי עובדת גם",
 };
 
@@ -274,11 +274,13 @@ function setupPWA(){
 
 /* ---------- scoring ---------- */
 function totalCost(a){return num(a.prix)+num(a.arnona)+num(a.vaad)}
+function estTotal(a){const p=num(a.prix);if(!p)return 0;return p+(num(a.arnona)||450)+(num(a.vaad)||200)}
+function overBudget(a){const b=num(state.profile.budget)||10500;return state.profile.budgetToutCompris!==false?estTotal(a)>b:num(a.prix)>b}
 function score(a){
   const p=state.profile;let s=50;const prix=num(a.prix);
   if(prix&&prix<prixMin())s-=35;
-  if(prix){const cible=num(p.budgetCible)||9500,max=num(p.budget)||11000;
-    if(prix<=cible-1000)s+=20;else if(prix<=cible)s+=14;else if(prix<=max)s+=4;else s-=25}
+  if(prix){const cible=num(p.budgetCible)||9500,max=num(p.budget)||10500,c=p.budgetToutCompris!==false?estTotal(a):prix;
+    if(c<=cible-1000)s+=20;else if(c<=cible)s+=14;else if(c<=max)s+=4;else s-=25}
   if(a.mamad==="oui")s+=15;else if(a.mamad==="abri")s+=6;else if(a.mamad==="non")s-=8;
   const et=num(a.etage);if(et>=3&&a.ascenseur==="non")s-=12;if(a.ascenseur==="oui")s+=4;
   if(a.balcon)s+=8;if(a.clim)s+=4;if(a.meuble)s+=3;if(a.parking)s+=2;
@@ -288,7 +290,7 @@ function score(a){
   return Math.max(0,Math.min(100,Math.round(s)));
 }
 function prixMin(){return num(state.profile.prixMin)||8100}
-function hiddenByRule(a){const p=num(a.prix);return !!p&&p<prixMin()&&(a.status||"repere")==="repere"}
+function hiddenByRule(a){const p=num(a.prix);return !!p&&(p<prixMin()||p>(num(state.profile.budget)||10500))&&(a.status||"repere")==="repere"}
 function photoList(a){const as=(a.photoAssets||[]).filter(u=>/^(\/_blob\/|https:\/\/)/.test(String(u)));if(as.length)return as;
   if(state.mode==="static"||state.mode==="local")return (a.photos||[]).filter(u=>/^https:\/\//.test(String(u)));return []}
 function hasTel(a){return waNumber(a.contactTel).length>=11}
@@ -302,7 +304,7 @@ function vars(a,p){
   const isAgencyName=/(agence|agency|nekhasim|nechasim|נכסים|real estate|תיווך)/i.test(String(a.contactNom||""));
   const nm=isAgencyName?"":cleanName(a.contactNom),nmHe=cleanName(a.contactNomHe)||(/[\u0590-\u05FF]/.test(nm)?nm:"");
   return {rue:a.rue||"",rueHe:a.rueHe||"",contactHe:nmHe,quartier:a.quartier||"",prix:num(a.prix)?num(a.prix).toLocaleString("fr-FR"):"",pieces:a.pieces||"3",
-    contact:/[\u0590-\u05FF]/.test(nm)?"":nm,dispos:p.dispos,disposHe:p.disposHe,budget:(num(p.budget)||11000).toLocaleString("fr-FR"),
+    contact:/[\u0590-\u05FF]/.test(nm)?"":nm,dispos:p.dispos,disposHe:p.disposHe,budget:(num(p.budget)||10500).toLocaleString("fr-FR"),
     noms:p.noms,nomsHe:p.nomsHe,sig:p.signature||"",tel:p.tel||"",emploi:p.emploi,emploiHe:p.emploiHe,offre:a.offre||""};
 }
 const T={
@@ -336,9 +338,9 @@ const T={
   fr:v=>`Bonjour${v.contact?" "+v.contact:""}, merci beaucoup pour votre temps. Nous avons finalement choisi un autre appartement. Bonne continuation !\n${v.sig}`},
 };
 const AGENCY_T={
-  he:v=>`שלום,\nאני ובת הדודה שלי עולים חדשים מצרפת ומחפשים דירת 3 חדרים (סלון + 2 חדרי שינה) להשכרה בתל אביב: לב העיר, הצפון הישן, הצפון החדש, נווה צדק, פלורנטין, כרם התימנים ודומיהן (לא יפו ולא רמת אביב).\nתקציב: עד ${v.budget} ₪ לחודש. כניסה מיידית, לטווח ארוך.\nשנינו עובדים (${v.emploiHe}), רציניים, בלי חיות, והמסמכים מוכנים. נשמח שתעדכנו אותנו בכל דירה מתאימה${v.tel?", גם בוואטסאפ: "+v.tel:""}.\nתודה רבה,\n${v.sig}`,
-  en:v=>`Hello,\nMy cousin and I are new immigrants from France looking to rent a 3-room apartment (living room + 2 bedrooms) in central Tel Aviv: Lev Ha'ir, Old North, New North, Neve Tzedek, Florentin, Kerem HaTeimanim and similar (not Jaffa, not Ramat Aviv).\nBudget: up to ${v.budget} ₪/month. Immediate move-in, long term.\nWe both work (${v.emploi}), serious, no pets, and our documents are ready. Please send us anything that fits${v.tel?", WhatsApp is best: "+v.tel:""}.\nMany thanks,\n${v.sig}`,
-  fr:v=>`Bonjour,\nMa cousine et moi sommes olim de France et cherchons à louer un 3 pièces (salon + 2 chambres) à Tel Aviv centre : Lev Ha'ir, Vieux Nord, Nouveau Nord, Neve Tzedek, Florentin, Kerem HaTeimanim… (pas Yafo, pas Ramat Aviv).\nBudget : jusqu'à ${v.budget} ₪/mois. Entrée immédiate, long terme.\nNous travaillons tous les deux (${v.emploi}), sommes sérieux, sans animaux, et notre dossier est prêt. Merci de nous envoyer tout ce qui correspond${v.tel?", idéalement par WhatsApp : "+v.tel:""}.\nMerci beaucoup,\n${v.sig}`,
+  he:v=>`שלום,\nאני ובת הדודה שלי עולים חדשים מצרפת ומחפשים דירת 3 חדרים (סלון + 2 חדרי שינה) להשכרה בתל אביב: לב העיר, הצפון הישן, הצפון החדש, נווה צדק, פלורנטין, כרם התימנים ודומיהן (לא יפו ולא רמת אביב).\nתקציב: עד ${v.budget} ₪ לחודש, כולל ארנונה וועד בית. כניסה מ-8 בדצמבר, לטווח ארוך.\nשנינו עובדים (${v.emploiHe}), רציניים, בלי חיות, והמסמכים מוכנים. נשמח שתעדכנו אותנו בכל דירה מתאימה${v.tel?", גם בוואטסאפ: "+v.tel:""}.\nתודה רבה,\n${v.sig}`,
+  en:v=>`Hello,\nMy cousin and I are new immigrants from France looking to rent a 3-room apartment (living room + 2 bedrooms) in central Tel Aviv: Lev Ha'ir, Old North, New North, Neve Tzedek, Florentin, Kerem HaTeimanim and similar (not Jaffa, not Ramat Aviv).\nBudget: up to ${v.budget} ₪/month, all included (rent + arnona + vaad bayit). Move-in from December 8, long term.\nWe both work (${v.emploi}), serious, no pets, and our documents are ready. Please send us anything that fits${v.tel?", WhatsApp is best: "+v.tel:""}.\nMany thanks,\n${v.sig}`,
+  fr:v=>`Bonjour,\nMa cousine et moi sommes olim de France et cherchons à louer un 3 pièces (salon + 2 chambres) à Tel Aviv centre : Lev Ha'ir, Vieux Nord, Nouveau Nord, Neve Tzedek, Florentin, Kerem HaTeimanim… (pas Yafo, pas Ramat Aviv).\nBudget : jusqu'à ${v.budget} ₪/mois tout compris (loyer + arnona + vaad bayit). Entrée à partir du 8 décembre, long terme.\nNous travaillons tous les deux (${v.emploi}), sommes sérieux, sans animaux, et notre dossier est prêt. Merci de nous envoyer tout ce qui correspond${v.tel?", idéalement par WhatsApp : "+v.tel:""}.\nMerci beaucoup,\n${v.sig}`,
 };
 
 /* ---------- Claude helpers ---------- */
@@ -407,12 +409,12 @@ function viewAnnonces(m){
   list.sort(sorters[state.sort]);
   m.innerHTML=`<div class="stack">
    ${state.mode==="local"?`<div class="alert">Mode local : les données restent dans ce navigateur. Ouvre la page depuis claude.ai et connecte-toi pour la partager avec ta cousine.</div>`:""}
-   ${state.mode==="static"?`<div class="alert info small">Les nouvelles annonces arrivent 3 fois par jour${state.listingsAt?" (dernier scan "+esc(relTime(state.listingsAt))+")":""}. Tes étapes et notes restent sur ce téléphone.</div>`:""}
+   ${state.mode==="static"?`<div class="small muted">Scan auto 3×/jour${state.listingsAt?" · dernier "+esc(relTime(state.listingsAt)):""} · tes notes restent sur ce téléphone</div>`:""}
    <div class="kpis">
-     <div class="kpi"><span>En cours</span><b>${active.length}</b></div>
-     <div class="kpi"><span>Visites à venir</span><b>${visites.length}</b></div>
-     <div class="kpi"><span>À relancer</span><b>${relancer.length}</b></div>
-     <div class="kpi"><span>Nouveaux (Claude)</span><b>${apts.filter(a=>a.auto&&!a.seen&&a.status==="repere").length}</b></div>
+     <div class="kpi"><span>Actives</span><b>${active.length}</b></div>
+     <div class="kpi"><span>Visites</span><b>${visites.length}</b></div>
+     <div class="kpi"><span>Relances</span><b>${relancer.length}</b></div>
+     <div class="kpi"><span>Nouvelles</span><b>${apts.filter(a=>a.auto&&!a.seen&&a.status==="repere").length}</b></div>
    </div>
    ${visites.length||relancer.length?`<div class="grid2">
      ${visites.length?`<div class="panel"><h3>Prochaines visites</h3><div class="list">${visites.slice(0,5).map(a=>`<div class="row between"><button class="btn-ghost" data-open="${esc(a.id)}" style="padding:0;text-align:start">${esc(a.titre||a.rue||"Appartement")}</button><span class="num small">${esc(fmtDT(a.visiteAt))}</span></div>`).join("")}</div></div>`:""}
@@ -423,7 +425,7 @@ function viewAnnonces(m){
      <select id="sort" style="width:auto"><option value="score">Tri : score</option><option value="prix">Tri : prix</option><option value="recent">Tri : ajout</option><option value="pub">Tri : date de publication</option></select>
      <a class="btn btn-primary" href="#ajouter">+ Ajouter</a>
    </div>
-   ${hiddenN?`<div class="small muted row">${state.showAll?"Annonces sous "+esc(fmt(prixMin()))+" affichées.":esc(hiddenN+" annonce"+(hiddenN>1?"s":"")+" sous "+fmt(prixMin())+" masquée"+(hiddenN>1?"s":"")+" (ta règle).")} <button class="btn-ghost" id="toggleHidden" style="padding:2px 6px">${state.showAll?"Masquer":"Afficher quand même"}</button></div>`:""}
+   ${hiddenN?`<div class="small muted row">${state.showAll?"Annonces hors fourchette affichées.":esc(hiddenN+" annonce"+(hiddenN>1?"s":"")+" hors fourchette ("+fmt(prixMin())+" – "+fmt(num(state.profile.budget)||10500)+") masquée"+(hiddenN>1?"s":"")+".")} <button class="btn-ghost" id="toggleHidden" style="padding:2px 6px">${state.showAll?"Masquer":"Afficher quand même"}</button></div>`:""}
    <div class="chips" role="group" aria-label="Filtrer par étape">
      ${[["nouveaux","Nouveaux (Claude)"],["actifs","En cours"],["tous","Tous"],...STATUSES].map(([k,l])=>`<button class="chip" data-filter="${k}" aria-pressed="${state.filter===k}">${esc(l)} <span class="num">${k==="nouveaux"?apts.filter(a=>a.auto&&!a.seen&&a.status==="repere").length:k==="actifs"?active.length:k==="tous"?apts.length:apts.filter(a=>a.status===k).length}</span></button>`).join("")}
    </div>
@@ -446,6 +448,7 @@ function cardHTML(a){
   if(a.etage!==""&&a.etage!=null)tags.push([num(a.etage)>=3&&a.ascenseur==="non"?"bad":"",`${a.etage==0?"RDC":"Étage "+a.etage}${a.ascenseur==="oui"?" · ascenseur":a.ascenseur==="non"?" · sans asc.":""}`]);
   if(a.balcon)tags.push(["good","Balcon"]);if(a.clim)tags.push(["","Clim"]);if(a.meuble)tags.push(["","Meublé"]);if(a.parking)tags.push(["","Parking"]);
   if(a.dispo)tags.push(["","Dispo "+a.dispo]);
+  if(overBudget(a))tags.push(["warn","Dépasse le budget tout compris"+(num(a.arnona)||num(a.vaad)?"":" (estimé)")]);
   const ph=photoList(a)[0];
   return `<div class="card" data-open="${esc(a.id)}" role="button" tabindex="0">
     ${ph?`<img class="thumb" src="${esc(ph)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`:""}
@@ -709,7 +712,7 @@ function viewProfil(m){
    <div class="fields">
     <label>Signature<input id="p_signature" value="${esc(p.signature)}"></label>
     <label>Ton tél. israélien<input id="p_tel" type="tel" value="${esc(p.tel)}" placeholder="05X-XXXXXXX"></label>
-    <label>Budget max ₪<input id="p_budget" inputmode="numeric" value="${esc(p.budget)}"></label>
+    <label>Budget max tout compris ₪<input id="p_budget" inputmode="numeric" value="${esc(p.budget)}"></label>
     <label>Budget idéal ₪<input id="p_budgetCible" inputmode="numeric" value="${esc(p.budgetCible)}"></label>
     <label>Loyer minimum ₪<input id="p_prixMin" inputmode="numeric" value="${esc(p.prixMin)}"></label>
     <label class="wide">Métier (FR/EN)<input id="p_emploi" value="${esc(p.emploi)}"></label>
@@ -720,7 +723,7 @@ function viewProfil(m){
    <div class="row"><button class="btn-primary" id="psave">Enregistrer</button></div>
    <p class="small muted" style="margin:0">Règle : les annonces sous le loyer minimum sont masquées (sauf si tu les as déjà traitées). Le score (0-100) favorise : loyer sous le budget idéal, mamad, ascenseur si étage ≥ 3, balcon, clim, quartiers centraux, et ta note après visite.</p>
   </div></div>`;
-  $("#psave").onclick=async()=>{const np={...state.profile};["signature","tel","budget","budgetCible","prixMin","emploi","emploiHe","dispos","disposHe"].forEach(k=>np[k]=$("#p_"+k).value.trim());np.budget=num(np.budget)||11000;np.prixMin=num(np.prixMin)||8100;np.budgetCible=num(np.budgetCible)||9500;state.profile=np;await store.putDoc("settings/profile",np);lsSave();toast("Profil enregistré");m.dataset.view="";render()};
+  $("#psave").onclick=async()=>{const np={...state.profile};["signature","tel","budget","budgetCible","prixMin","emploi","emploiHe","dispos","disposHe"].forEach(k=>np[k]=$("#p_"+k).value.trim());np.budget=num(np.budget)||10500;np.prixMin=num(np.prixMin)||8100;np.budgetCible=num(np.budgetCible)||9500;state.profile=np;await store.putDoc("settings/profile",np);lsSave();toast("Profil enregistré");m.dataset.view="";render()};
 }
 
 boot();
@@ -729,7 +732,7 @@ boot();
 /* ---------- content: search links & tips (research of 24 Nov 2026) ---------- */
 const FB=id=>"https://www.facebook.com/groups/"+id;
 window.__SEARCH_LINKS=[
- {group:"Sites d'annonces (à ouvrir matin et soir)",name:"Yad2 – Tel Aviv, 3 pièces, 7 000–11 000 ₪",url:"https://www.yad2.co.il/realestate/rent?topArea=2&city=5000&minRooms=3&maxRooms=3&minPrice=7000&maxPrice=11000",note:"Le plus gros site. Si le filtre de prix ne s'applique pas, règle-le à la main, puis « שמירת חיפוש » pour recevoir les alertes (compte gratuit)."},
+ {group:"Sites d'annonces (à ouvrir matin et soir)",name:"Yad2 – Tel Aviv, 3 pièces, 8 100–10 000 ₪",url:"https://www.yad2.co.il/realestate/rent?topArea=2&city=5000&minRooms=3&maxRooms=3&minPrice=8100&maxPrice=10000",note:"Le plus gros site. Si le filtre de prix ne s'applique pas, règle-le à la main, puis « שמירת חיפוש » pour recevoir les alertes (compte gratuit)."},
  {group:"Sites d'annonces (à ouvrir matin et soir)",name:"Madlan – Tel Aviv, 3 pièces",url:"https://www.madlan.co.il/for-rent/%D7%AA%D7%9C-%D7%90%D7%91%D7%99%D7%91-%D7%99%D7%A4%D7%95-%D7%99%D7%A9%D7%A8%D7%90%D7%9C/3-bd",note:"Mets le prix dans les filtres et enregistre la recherche. Il y a aussi un filtre mamad."},
  {group:"Sites d'annonces (à ouvrir matin et soir)",name:"Madlan – avec mamad",url:"https://www.madlan.co.il/for-rent/%D7%AA%D7%9C-%D7%90%D7%91%D7%99%D7%91-%D7%99%D7%A4%D7%95-%D7%99%D7%A9%D7%A8%D7%90%D7%9C/secure-room"},
  {group:"Sites d'annonces (à ouvrir matin et soir)",name:"Homeless",url:"https://www.homeless.co.il/rent/",note:"Beaucoup de particuliers."},
@@ -756,7 +759,7 @@ window.__SEARCH_LINKS=[
 ];
 window.__TIPS=[
  ["Le marché, en vrai (fin 2026)",[
-  "Loyer moyen d'un 3 pièces à Tel Aviv : environ <b>7 000 ₪</b> (données officielles CBS, T3 2025). Le prix <b>demandé</b> sur Yad2 et Madlan tourne autour de <b>8 500 ₪</b>. Avec 7 000 à 11 000 ₪, tu es dans le marché.",
+  "Loyer moyen d'un 3 pièces à Tel Aviv : environ <b>7 000 ₪</b> (données officielles CBS, T3 2025). Le prix <b>demandé</b> sur Yad2 et Madlan tourne autour de <b>8 500 ₪</b>. Avec ta fourchette (8 100 ₪ minimum, 10 500 ₪ tout compris, donc un loyer d'environ 8 100 à 9 900 ₪), tu vises le haut du marché « correct » : rénové, souvent avec mamad.",
   "Vieux Nord : 6 000–9 000 ₪ sans mamad, jusqu'à ~10 000 ₪ avec mamad. Florentin rénové : 7 500–11 000 ₪. Lev Ha'ir et Rothschild en Bauhaus rénové : 12 000–18 000 ₪, hors budget. Neve Tzedek : généralement hors budget.",
   "Un <b>mamad</b> ajoute environ 10 % au loyer. Les apparts sans mamad ni abri ont baissé de 5 à 10 % depuis 2023 : c'est là qu'on négocie.",
   "Un projet TAMA 38 ou « pinui binui » (démolition-reconstruction) juste à côté peut faire baisser le loyer jusqu'à 2 000 ₪, mais attention au bruit du chantier.",

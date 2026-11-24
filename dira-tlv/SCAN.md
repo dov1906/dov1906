@@ -7,7 +7,11 @@ Outils à charger avec ToolSearch : "select:mcp__Exa__web_search_exa,mcp__Exa__w
 Tracker : https://claude.ai/artifact/1EUHH9DjoTxyPys7XjcZY1 (outil `ArtifactData`, collection `apts`).
 
 ## Règles de Dov (strictes)
-- **Loyer : 8 100 ₪ minimum, 11 000 ₪ maximum.** Jusqu'à 11 500 ₪ seulement si c'est exceptionnel (mamad + centre). Rien sous 8 100 : « pas d'appartement miteux ».
+- **Budget : 10 500 ₪ par mois TOUT COMPRIS** (loyer + arnona + vaad bayit). **Le loyer doit être d'au moins 8 100 ₪** : « pas d'appartement miteux ».
+  - En pratique, garde les loyers de 8 100 à 10 000 ₪.
+  - Un loyer de 10 000 à 10 300 ₪ est accepté seulement si l'arnona et le vaad annoncés tiennent dans les 10 500 ₪, ou si le vaad est inclus dans le loyer.
+  - Au-dessus de 10 300 ₪ : exclure.
+  - Arnona inconnue : compte environ 450 ₪. Vaad inconnu : compte environ 200 ₪.
 - Location longue durée uniquement. Exclure la sous-location et la location courte (סאבלט, sublet, Airbnb, « לתקופה קצרה »).
 - 3 à 3,5 pièces israéliennes (salon + 2 chambres). 4 pièces seulement si le loyer reste dans la fourchette.
 - Tel Aviv uniquement.
@@ -16,9 +20,15 @@ Tracker : https://claude.ai/artifact/1EUHH9DjoTxyPys7XjcZY1 (outil `ArtifactData
   - EXCLURE hors Tel Aviv : Ramat Gan, Givatayim, Bat Yam, Holon…
 - Priorité au centre : Lev Ha'ir, Vieux Nord, Nouveau Nord, Florentin, Neve Tzedek, Kerem HaTeimanim, Montefiore/Rothschild, Kikar HaMedina, Bavli. Le sud-est (Shapira, Hatikva, Kfar Shalem) est accepté mais moins prioritaire.
 - Annonces publiées dans les 7 derniers jours de préférence, jamais plus de 21 jours.
+  - La date qui compte est **la plus ancienne trouvée** : publication, historique des prix, ou date dans l'URL des photos Yad2 (…/Pic/AAAAMM/JJ/…). Le « עודכן » (mis à jour) de Realta ne suffit pas.
+  - Une annonce Madlan ou Homeless sans aucune date est acceptée, avec `publishedAt` vide et « date inconnue » dans `resume`.
+- Entrée possible à partir du 8 décembre 2026. Une entrée plus tardive (après le 15 janvier 2027) est un défaut : mentionne-le dans `resume`.
+
+## 0. Dossier de travail
+Utilise un **sous-dossier neuf du dossier scratchpad de ta session** (son chemin est indiqué dans ton environnement), par exemple `<scratchpad>/scan-<date>-<heure>/`, et appelle-le `$W` dans la suite. N'utilise pas `/tmp` directement : l'outil Artifact refuse d'envoyer des fichiers situés hors des dossiers autorisés. Ne lance jamais `rm` avec un joker.
 
 ## 1. Lire le tracker (pour éviter les doublons)
-`ArtifactData` action `list`, collection `apts`, limit 1000, avec `out_dir` sur un dossier temporaire. Suis `next_cursor` s'il y en a.
+`ArtifactData` action `list`, collection `apts`, `query: {"limit": 1000}`, `out_dir: "$W/db"`. Si le résultat contient `next_cursor`, refais l'appel avec `query.cursor` égal à cette valeur.
 
 Une annonce est un doublon si l'une de ces conditions est vraie :
 - même `url` ou même `sourceUrl` ;
@@ -28,8 +38,9 @@ Ne réécris jamais une annonce existante : la fiche de Dov contient ses notes e
 
 ## 2. Chercher
 Les pages de liste (Madlan, Homeless) ne donnent ni lien ni date par annonce. Il faut donc :
-- faire 6 à 8 recherches (`web_search_exa`, numResults 10), en hébreu et en anglais, en variant les quartiers ;
-- cibler des annonces individuelles récentes sur realta.co.il (la source la plus productive), dili.co.il, madlan.co.il, telavivrent.com, ad.co.il, komo.co.il, zipika.com, onmap.co.il, winwin.co.il et janglo.net.
+- faire 8 à 12 recherches (`web_search_exa`, numResults 10), en hébreu et en anglais, en variant les quartiers et les rues (Dizengoff, Ben Yehuda, Gordon, Frishman, Ibn Gabirol, Bograshov, Florentin, Herzl, Vital, Levinsky, Shabazi, Yehuda HaLevi, Allenby, Arlozorov, Jabotinsky…) ;
+- tu peux aussi lire les pages de liste Realta par quartier pour récupérer les liens de plusieurs annonces d'un coup ;
+- cibler des annonces individuelles récentes sur realta.co.il (la source la plus productive), dili.co.il, madlan.co.il, homeless.co.il, telavivrent.com, ad.co.il, komo.co.il, zipika.com, onmap.co.il, winwin.co.il et janglo.net.
 
 Exemples de requêtes :
 - « דירת 3 חדרים להשכרה בתל אביב ללא תיווך פורסם השבוע »
@@ -42,14 +53,14 @@ Yad2 et Facebook bloquent la lecture directe : passe par les agrégateurs qui re
 1. Lis la page de détail avec `web_fetch_exa` (maxCharacters 6000) pour avoir le texte.
 2. Lis-la aussi avec **WebFetch**, avec ce prompt : « Liste les URL https des photos de CET appartement (sans les annonces similaires, les logos ni les cartes), le numéro de téléphone de l'annonceur s'il apparaît, et le lien vers l'annonce d'origine (yad2.co.il/realestate/item/…, facebook.com/groups/…/posts/…), décodé s'il passe par une redirection go.realta.co.il. »
    - Realta donne en général les photos (img.yad2.co.il) et le lien Yad2.
-   - dili et Madlan refusent WebFetch (erreur 403) : dans ce cas, pas de photos.
+   - dili, Madlan et Homeless refusent WebFetch (erreur 403) : dans ce cas, pas de photos, mais l'annonce reste valable avec le texte d'Exa.
 3. Ne rapporte que des URL qui apparaissent vraiment dans les résultats des outils.
 4. Le numéro affiché par Realta (+972-54-772-7104) et celui de dili (02-376-6666) sont ceux des sites eux-mêmes, pas des annonceurs : ne jamais les enregistrer comme contact.
 
 ## 4. Photos (au plus 4 par annonce)
 Pour chaque annonce, télécharge les photos en https, hors fbcdn qui expire, et réduis-les :
 ```bash
-mkdir -p /tmp/ph && cd /tmp/ph
+mkdir -p "$W/ph" && cd "$W/ph"
 curl -s -f -L --max-time 20 -o "<doc_id>-1.raw" "<url photo>"   # une commande par photo
 python3 -c "
 from PIL import Image; import glob, os
@@ -69,7 +80,7 @@ Si une étape échoue, continue sans photos pour cette annonce.
 ## 5. Écriture dans le tracker
 Fais un `ArtifactData` `batch` d'opérations `set`, sans `if_version` puisque ce sont des créations, dans la collection `apts`.
 
-`doc_id` = `auto-<site>-<identifiant de l'annonce dans l'URL>`, ou à défaut `auto-<site>-<rue en ascii>-<prix>`. Uniquement des minuscules, des chiffres et des tirets.
+`doc_id` = `auto-<site>-<identifiant de l'annonce dans l'URL, casse conservée>`, ou à défaut `auto-<site>-<rue en ascii minuscules>-<prix>`. Uniquement des lettres, des chiffres et des tirets. Les doublons se détectent d'abord par `url`.
 
 Champs :
 ```
@@ -88,7 +99,7 @@ contactNomHe: en hébreu
 contactTel, contactEmail: "" si non trouvé
 contactType: "proprio"|"agent"|""
 url: la page de l'annonce (https)
-sourceUrl: l'annonce d'origine Yad2/Facebook/Madlan, ou ""
+sourceUrl: l'annonce d'origine sur un AUTRE site que `url` (Yad2, Facebook…), sinon ""
 source: la source d'origine si elle est connue (Yad2, Facebook, Madlan…), sinon le site (Realta, dili, TelAvivRent…)
 photos: [URL https d'origine]
 photoAssets: ["/_blob/…"]
@@ -107,9 +118,9 @@ Maximum 20 annonces par scan, les plus pertinentes d'abord (centre, mamad, réce
 
 ## 6. Export vers l'app installable (GitHub)
 Le dépôt est dov1906/dov1906, branche `claude/tel-aviv-apartment-tracker-wo8lg8`.
-1. Exécute : `git fetch origin claude/tel-aviv-apartment-tracker-wo8lg8 && git checkout claude/tel-aviv-apartment-tracker-wo8lg8`.
-2. Relis toute la collection `apts`, ainsi que `agencies`, avec `out_dir` = `/tmp/dbexport` (sous-dossiers `apts/` et `agencies/`).
-3. Exécute `python3 dira-tlv/export_listings.py /tmp/dbexport`.
+1. Place-toi dans le dépôt cloné dans ta session (s'il est absent : `git clone https://github.com/dov1906/dov1906 "$W/repo"`). Puis exécute `git fetch origin claude/tel-aviv-apartment-tracker-wo8lg8 && git checkout claude/tel-aviv-apartment-tracker-wo8lg8 && git pull --ff-only`.
+2. Relis toute la collection `apts` avec `out_dir: "$W/export"`, puis `agencies` avec le même `out_dir` (sous-dossiers `apts/` et `agencies/`). Utilise ce dossier neuf, pas celui de l'étape 1, pour que les annonces supprimées du tracker disparaissent de l'export.
+3. Exécute `python3 dira-tlv/export_listings.py "$W/export"`.
 4. Commit `dira-tlv/app/data/listings.json` avec le message « Scan <date> : N nouvelles annonces ».
 5. Pousse sur cette branche. Ne pousse sur aucune autre branche et n'ouvre pas de pull request.
 
