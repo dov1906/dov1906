@@ -1,9 +1,9 @@
 {
- "generated": "2026-11-25T14:54:47.866816+00:00",
+ "generated": "2026-11-25T14:56:12.569624+00:00",
  "sources": {
   "goozali": {
-   "count": null,
-   "error": "RuntimeError: readSharedViewData URL not found in embed page"
+   "count": 226,
+   "error": null
   },
   "greenhouse:fireblocks": {
    "count": 7,

@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-25T14:54:47.866816+00:00",
+ "generated": "2026-11-25T14:56:12.569624+00:00",
  "count": 1816,
  "jobs": [
   {
@@ -1042,24 +1042,6 @@
    "company": "catonetworks",
    "title": "Software Engineer",
    "location": "Tel Aviv District, Israel",
-   "url": "https://www.catonetworks.com/careers/careers-post/5030360101?gh_jid=5030360101",
-   "posted": "2026-11-24",
-   "id": "gh-5030360101"
-  },
-  {
-   "source": "Greenhouse",
-   "company": "catonetworks",
-   "title": "Software Engineer",
-   "location": "Tel Aviv District, Israel",
-   "url": "https://www.catonetworks.com/careers/careers-post/5030362101?gh_jid=5030362101",
-   "posted": "2026-11-24",
-   "id": "gh-5030362101"
-  },
-  {
-   "source": "Greenhouse",
-   "company": "catonetworks",
-   "title": "Software Engineer",
-   "location": "Tel Aviv District, Israel",
    "url": "https://www.catonetworks.com/careers/careers-post/5036503101?gh_jid=5036503101",
    "posted": "2026-11-24",
    "id": "gh-5036503101"
@@ -1072,6 +1054,24 @@
    "url": "https://www.catonetworks.com/careers/careers-post/5024653101?gh_jid=5024653101",
    "posted": "2026-11-24",
    "id": "gh-5024653101"
+  },
+  {
+   "source": "Greenhouse",
+   "company": "catonetworks",
+   "title": "Software Engineer",
+   "location": "Tel Aviv District, Israel",
+   "url": "https://www.catonetworks.com/careers/careers-post/5030360101?gh_jid=5030360101",
+   "posted": "2026-11-24",
+   "id": "gh-5030360101"
+  },
+  {
+   "source": "Greenhouse",
+   "company": "catonetworks",
+   "title": "Software Engineer",
+   "location": "Tel Aviv District, Israel",
+   "url": "https://www.catonetworks.com/careers/careers-post/5030362101?gh_jid=5030362101",
+   "posted": "2026-11-24",
+   "id": "gh-5030362101"
   },
   {
    "source": "Greenhouse",
@@ -1672,18 +1672,18 @@
    "company": "taboola",
    "title": "Senior Product Manager",
    "location": "Tel Aviv, Israel",
-   "url": "https://www.taboola.com/careers/job/8278521?gh_jid=8278521",
-   "posted": "2026-10-19",
-   "id": "gh-8278521"
+   "url": "https://www.taboola.com/careers/job/8273430?gh_jid=8273430",
+   "posted": "2026-10-26",
+   "id": "gh-8273430"
   },
   {
    "source": "Greenhouse",
    "company": "taboola",
    "title": "Senior Product Manager",
    "location": "Tel Aviv, Israel",
-   "url": "https://www.taboola.com/careers/job/8273430?gh_jid=8273430",
-   "posted": "2026-10-26",
-   "id": "gh-8273430"
+   "url": "https://www.taboola.com/careers/job/8278521?gh_jid=8278521",
+   "posted": "2026-10-19",
+   "id": "gh-8278521"
   },
   {
    "source": "Greenhouse",
@@ -9689,6 +9689,24 @@
   {
    "source": "Qualcomm",
    "company": "Qualcomm",
+   "title": "Staff Firmware Engineer - 5G/6G Modem - Qualcomm, Hod HaSharon, Israel",
+   "location": "Hod Hasharon, Haifa District, Israel",
+   "url": "https://careers.qualcomm.com/careers/job/446720201787",
+   "posted": "2026-10-07",
+   "id": "qualcomm-446720201787"
+  },
+  {
+   "source": "Qualcomm",
+   "company": "Qualcomm",
+   "title": "Firmware Engineer – 5G Modem - Hod HaSharon",
+   "location": "Hod Hasharon, Haifa District, Israel",
+   "url": "https://careers.qualcomm.com/careers/job/446721630251",
+   "posted": "2026-10-19",
+   "id": "qualcomm-446721630251"
+  },
+  {
+   "source": "Qualcomm",
+   "company": "Qualcomm",
    "title": "Algorithm Engineer - Hod Hasharon",
    "location": "Hod Hasharon, Haifa District, Israel",
    "url": "https://careers.qualcomm.com/careers/job/446721222578",
@@ -9712,24 +9730,6 @@
    "url": "https://careers.qualcomm.com/careers/job/446720273102",
    "posted": "2026-08-27",
    "id": "qualcomm-446720273102"
-  },
-  {
-   "source": "Qualcomm",
-   "company": "Qualcomm",
-   "title": "Staff Firmware Engineer - 5G/6G Modem - Qualcomm, Hod HaSharon, Israel",
-   "location": "Hod Hasharon, Haifa District, Israel",
-   "url": "https://careers.qualcomm.com/careers/job/446720201787",
-   "posted": "2026-10-07",
-   "id": "qualcomm-446720201787"
-  },
-  {
-   "source": "Qualcomm",
-   "company": "Qualcomm",
-   "title": "Firmware Engineer – 5G Modem - Hod HaSharon",
-   "location": "Hod Hasharon, Haifa District, Israel",
-   "url": "https://careers.qualcomm.com/careers/job/446721630251",
-   "posted": "2026-10-19",
-   "id": "qualcomm-446721630251"
   },
   {
    "source": "Qualcomm",
@@ -9824,24 +9824,6 @@
   {
    "source": "Qualcomm",
    "company": "Qualcomm",
-   "title": "Design Verification Engineer  - Haifa",
-   "location": "Haifa, Haifa District, Israel",
-   "url": "https://careers.qualcomm.com/careers/job/446721455859",
-   "posted": "2026-10-16",
-   "id": "qualcomm-446721455859"
-  },
-  {
-   "source": "Qualcomm",
-   "company": "Qualcomm",
-   "title": "HW Board Designer - Haifa",
-   "location": "Haifa, Haifa District, Israel",
-   "url": "https://careers.qualcomm.com/careers/job/446721689448",
-   "posted": "2026-11-25",
-   "id": "qualcomm-446721689448"
-  },
-  {
-   "source": "Qualcomm",
-   "company": "Qualcomm",
    "title": "Embedded Software Engineer – 5G RF Firmware - Haifa",
    "location": "Haifa, Haifa District, Israel",
    "url": "https://careers.qualcomm.com/careers/job/446721741525",
@@ -9856,6 +9838,24 @@
    "url": "https://careers.qualcomm.com/careers/job/446721741529",
    "posted": "2026-11-25",
    "id": "qualcomm-446721741529"
+  },
+  {
+   "source": "Qualcomm",
+   "company": "Qualcomm",
+   "title": "Design Verification Engineer  - Haifa",
+   "location": "Haifa, Haifa District, Israel",
+   "url": "https://careers.qualcomm.com/careers/job/446721455859",
+   "posted": "2026-10-16",
+   "id": "qualcomm-446721455859"
+  },
+  {
+   "source": "Qualcomm",
+   "company": "Qualcomm",
+   "title": "HW Board Designer - Haifa",
+   "location": "Haifa, Haifa District, Israel",
+   "url": "https://careers.qualcomm.com/careers/job/446721689448",
+   "posted": "2026-11-25",
+   "id": "qualcomm-446721689448"
   },
   {
    "source": "Qualcomm",
