@@ -151,9 +151,8 @@ GREENHOUSE = ["fireblocks", "orcasecurity", "axonius", "bigid", "appsflyer", "ri
               "transmitsecurity", "gongio", "sentinellabs", "saltsecurity", "apiiro", "augury",
               "duda", "optimove", "jamf", "elastic", "gitlab", "okta", "zscaler", "datadog",
               "mongodb", "tripactions", "eonio", "nanit", "scaleops", "nift", "connecteam",
-              "monticelloam", "beyondtrust", "via", "phasev", "wiz", "cyberark", "armis",
-              "snyk", "lightricks", "melio", "hibob", "papayaglobal", "tipalti", "pagaya"]
-GREENHOUSE_EU = ["guidde", "nice", "scaleops"]
+              "monticelloam", "beyondtrust", "via", "phasev"]
+GREENHOUSE_EU = []
 LEVER = ["walkme"]
 LEVER_EU = ["mobileye"]
 ASHBY = ["lemonade", "moonactive", "honeybook", "finout", "monday.com", "Irregular", "ElevenLabs"]
@@ -161,7 +160,11 @@ SMARTR = ["Wix2", "CheckPointSoftwareTechnologies2", "kalturainc", "nexarinc"]
 
 
 def j(url, **kw):
-    r = S.get(url, timeout=60, **kw)
+    for attempt in range(4):
+        r = S.get(url, timeout=60, **kw)
+        if r.status_code != 429:
+            break
+        time.sleep(15 * (attempt + 1))
     r.raise_for_status()
     return r.json()
 
