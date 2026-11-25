@@ -59,6 +59,7 @@ def goozali():
                 dbg.append(f"--- {kw} @{mm.start()}: " + html[max(0, mm.start() - 150):mm.start() + 400])
         (ROOT / "feeds").mkdir(exist_ok=True)
         (ROOT / "feeds" / "goozali_debug.txt").write_text("\n".join(dbg))
+        print("\n".join(dbg)[:6000], flush=True)
         raise RuntimeError("readSharedViewData URL not found in embed page")
     path = m.group(1).encode().decode("unicode_escape").replace("\\/", "/")
     url = urllib.parse.urljoin("https://airtable.com", path)
