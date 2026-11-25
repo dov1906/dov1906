@@ -53,6 +53,12 @@ def goozali():
     if not m:
         m = re.search(r'"(\\?/v0\.3\\?/view\\?/[^"]+readSharedViewData[^"]+)"', html)
     if not m:
+        dbg = [f"status={page.status_code} len={len(html)}"]
+        for kw in ("readSharedViewData", "urlWithParams", "accessPolicy", "initData", "viw", "requestId"):
+            for mm in list(re.finditer(kw, html))[:3]:
+                dbg.append(f"--- {kw} @{mm.start()}: " + html[max(0, mm.start() - 150):mm.start() + 400])
+        (ROOT / "feeds").mkdir(exist_ok=True)
+        (ROOT / "feeds" / "goozali_debug.txt").write_text("\n".join(dbg))
         raise RuntimeError("readSharedViewData URL not found in embed page")
     path = m.group(1).encode().decode("unicode_escape").replace("\\/", "/")
     url = urllib.parse.urljoin("https://airtable.com", path)
