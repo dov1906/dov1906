@@ -49,7 +49,7 @@ def goozali():
     page = S.get(f"https://airtable.com/embed/{GZ_APP}/{GZ_SHARE}", timeout=60)
     page.raise_for_status()
     html = page.text
-    m = re.search(r'urlWithParams["\']?\s*:\s*"([^"]+readSharedViewData[^"]+)"', html)
+    m = re.search(r'urlWithParams["\']?\s*[:=]\s*"([^"]+readSharedViewData[^"]+)"', html)
     if not m:
         m = re.search(r'"(\\?/v0\.3\\?/view\\?/[^"]+readSharedViewData[^"]+)"', html)
     if not m:
@@ -82,7 +82,8 @@ def goozali():
     if pl:
         headers["x-airtable-page-load-id"] = pl.group(1)
     r = S.get(url, headers=headers, timeout=180)
-    r.raise_for_status()
+    if r.status_code != 200:
+        raise RuntimeError(f"readSharedViewData HTTP {r.status_code}: {r.text[:300]}")
     ctype = r.headers.get("content-type", "")
     if "msgpack" in ctype:
         import msgpack
