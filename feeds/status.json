@@ -1,8 +1,8 @@
 {
- "generated": "2026-11-25T14:56:12.569624+00:00",
+ "generated": "2026-11-26T22:19:38.487068+00:00",
  "sources": {
   "goozali": {
-   "count": 226,
+   "count": 233,
    "error": null
   },
   "greenhouse:fireblocks": {
@@ -14,7 +14,7 @@
    "error": null
   },
   "greenhouse:axonius": {
-   "count": 5,
+   "count": 6,
    "error": null
   },
   "greenhouse:bigid": {
@@ -22,7 +22,7 @@
    "error": null
   },
   "greenhouse:appsflyer": {
-   "count": 26,
+   "count": 25,
    "error": null
   },
   "greenhouse:riskified": {
@@ -30,7 +30,7 @@
    "error": null
   },
   "greenhouse:jfrog": {
-   "count": 20,
+   "count": 21,
    "error": null
   },
   "greenhouse:island": {
@@ -38,7 +38,7 @@
    "error": null
   },
   "greenhouse:catonetworks": {
-   "count": 40,
+   "count": 37,
    "error": null
   },
   "greenhouse:forter": {
@@ -54,15 +54,15 @@
    "error": null
   },
   "greenhouse:similarweb": {
-   "count": 20,
+   "count": 19,
    "error": null
   },
   "greenhouse:taboola": {
-   "count": 10,
+   "count": 6,
    "error": null
   },
   "greenhouse:transmitsecurity": {
-   "count": 8,
+   "count": 7,
    "error": null
   },
   "greenhouse:gongio": {
@@ -70,11 +70,11 @@
    "error": null
   },
   "greenhouse:sentinellabs": {
-   "count": 20,
+   "count": 19,
    "error": null
   },
   "greenhouse:saltsecurity": {
-   "count": 1,
+   "count": 2,
    "error": null
   },
   "greenhouse:apiiro": {
@@ -122,7 +122,7 @@
    "error": null
   },
   "greenhouse:tripactions": {
-   "count": 12,
+   "count": 9,
    "error": null
   },
   "greenhouse:eonio": {
@@ -134,8 +134,8 @@
    "error": null
   },
   "greenhouse:scaleops": {
-   "count": null,
-   "error": "HTTPSConnectionPool(host='boards-api.eu.greenhouse.io', port=443): Max retries exceeded with url: /v1/boards/scaleops/jo"
+   "count": 33,
+   "error": null
   },
   "greenhouse:nift": {
    "count": 2,
@@ -154,67 +154,19 @@
    "error": null
   },
   "greenhouse:via": {
-   "count": 12,
+   "count": 14,
    "error": null
   },
   "greenhouse:phasev": {
    "count": 0,
    "error": null
   },
-  "greenhouse:wiz": {
-   "count": null,
-   "error": "404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/wiz/jobs"
-  },
-  "greenhouse:cyberark": {
-   "count": null,
-   "error": "404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/cyberark/jobs"
-  },
-  "greenhouse:armis": {
-   "count": null,
-   "error": "404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/armis/jobs"
-  },
-  "greenhouse:snyk": {
-   "count": null,
-   "error": "404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/snyk/jobs"
-  },
-  "greenhouse:lightricks": {
-   "count": 0,
-   "error": null
-  },
-  "greenhouse:melio": {
-   "count": 0,
-   "error": null
-  },
-  "greenhouse:hibob": {
-   "count": null,
-   "error": "404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/hibob/jobs"
-  },
-  "greenhouse:papayaglobal": {
-   "count": null,
-   "error": "404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/papayaglobal/jobs"
-  },
-  "greenhouse:tipalti": {
-   "count": null,
-   "error": "404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/tipalti/jobs"
-  },
-  "greenhouse:pagaya": {
-   "count": 0,
-   "error": null
-  },
-  "greenhouse:guidde": {
-   "count": null,
-   "error": "HTTPSConnectionPool(host='boards-api.eu.greenhouse.io', port=443): Max retries exceeded with url: /v1/boards/guidde/jobs"
-  },
-  "greenhouse:nice": {
-   "count": null,
-   "error": "HTTPSConnectionPool(host='boards-api.eu.greenhouse.io', port=443): Max retries exceeded with url: /v1/boards/nice/jobs ("
-  },
   "lever:walkme": {
    "count": 9,
    "error": null
   },
   "lever:mobileye": {
-   "count": 151,
+   "count": 150,
    "error": null
   },
   "ashby:lemonade": {
@@ -226,7 +178,7 @@
    "error": null
   },
   "ashby:honeybook": {
-   "count": 3,
+   "count": 2,
    "error": null
   },
   "ashby:finout": {
@@ -234,7 +186,7 @@
    "error": null
   },
   "ashby:monday.com": {
-   "count": 51,
+   "count": 49,
    "error": null
   },
   "ashby:Irregular": {
@@ -246,11 +198,11 @@
    "error": null
   },
   "smartrecruiters:Wix2": {
-   "count": 37,
+   "count": 39,
    "error": null
   },
   "smartrecruiters:CheckPointSoftwareTechnologies2": {
-   "count": 41,
+   "count": 39,
    "error": null
   },
   "smartrecruiters:kalturainc": {
@@ -262,15 +214,15 @@
    "error": null
   },
   "pcsx:NVIDIA": {
-   "count": 384,
+   "count": 385,
    "error": null
   },
   "pcsx:Microsoft": {
-   "count": null,
-   "error": "429 Client Error: Too Many Requests for url: https://apply.careers.microsoft.com/api/pcsx/search?domain=microsoft.com&lo"
+   "count": 23,
+   "error": null
   },
   "pcsx:Qualcomm": {
-   "count": 38,
+   "count": 37,
    "error": null
   },
   "pcsx:PayPal": {
@@ -286,7 +238,7 @@
    "error": null
   },
   "elbit": {
-   "count": 551,
+   "count": 555,
    "error": null
   },
   "iai": {
