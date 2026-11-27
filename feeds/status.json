@@ -1,8 +1,8 @@
 {
- "generated": "2026-11-26T22:19:38.487068+00:00",
+ "generated": "2026-11-27T21:56:50.857752+00:00",
  "sources": {
   "goozali": {
-   "count": 233,
+   "count": 246,
    "error": null
   },
   "greenhouse:fireblocks": {
@@ -118,7 +118,7 @@
    "error": null
   },
   "greenhouse:mongodb": {
-   "count": 6,
+   "count": 7,
    "error": null
   },
   "greenhouse:tripactions": {
@@ -214,15 +214,15 @@
    "error": null
   },
   "pcsx:NVIDIA": {
-   "count": 385,
+   "count": 388,
    "error": null
   },
   "pcsx:Microsoft": {
-   "count": 23,
+   "count": 22,
    "error": null
   },
   "pcsx:Qualcomm": {
-   "count": 37,
+   "count": 36,
    "error": null
   },
   "pcsx:PayPal": {
